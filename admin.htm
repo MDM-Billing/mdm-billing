@@ -2,609 +2,949 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>MDM School Entry</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MDM Super Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <style>
 :root{
-  --ink:#1a1f2e;--ink2:#2d3748;--ink3:#6b7394;
-  --paper:#f5f0e8;--paper2:#ede8df;--border:#d8d2c8;
-  --white:#fff;
-  --saffron:#c8600a;--saffron2:#e07820;--saffronL:#fef3e8;
-  --teal:#0d6e6e;--tealL:#e6f4f4;
-  --green:#1a7a4a;--greenL:#e8f5ee;
-  --red:#b91c1c;--redL:#fef2f2;
-  --shadow:0 2px 16px rgba(26,31,46,.09);
+  --ink:#0f1420;--ink2:#1a2035;--ink3:#4a5568;
+  --paper:#f7f5f0;--paper2:#edeae3;--border:#ddd8d0;
+  --white:#ffffff;
+  --gold:#b8860b;--gold2:#d4a017;--goldL:#fefce8;
+  --green:#166534;--greenL:#dcfce7;--green2:#16a34a;
+  --red:#991b1b;--redL:#fee2e2;--red2:#dc2626;
+  --blue:#1e40af;--blueL:#dbeafe;
+  --amber:#92400e;--amberL:#fef3c7;
+  --teal:#0d6e6e;--tealL:#ccfbf1;
+  --shadow:0 1px 12px rgba(15,20,32,.08);
+  --shadow-lg:0 8px 40px rgba(15,20,32,.14);
+  --r:14px;--rs:9px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;max-width:480px;margin:0 auto;}
+body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 .fade-up{animation:fadeUp .3s ease forwards;}
 
-/* LOADER */
-#loader{position:fixed;inset:0;background:#0f1624;display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:14px;}
+/* ── LOADER ── */
+#loader{position:fixed;inset:0;background:var(--ink);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
 #loader.hidden{display:none;}
-.spin{width:32px;height:32px;border:3px solid rgba(255,255,255,.15);border-top:3px solid #e07820;border-radius:50%;animation:spin 1s linear infinite;}
+.loader-ring{width:40px;height:40px;border:3px solid rgba(255,255,255,.1);border-top:3px solid var(--gold2);border-radius:50%;animation:spin 1s linear infinite;}
 .loader-txt{color:rgba(255,255,255,.4);font-size:13px;}
 
-/* VIEWS */
-.view{display:none;}
-.view.active{display:block;}
+/* ── LOGIN ── */
+#v-login{min-height:100vh;background:linear-gradient(160deg,#0f1420 0%,#1a2035 60%,#0d2020 100%);display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden;}
+#v-login::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,rgba(184,134,11,.06),transparent 60%),radial-gradient(circle at 75% 25%,rgba(13,110,110,.06),transparent 50%);}
+.login-card{background:rgba(255,255,255,.04);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:44px 36px;width:100%;max-width:380px;text-align:center;position:relative;z-index:1;}
+.login-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(184,134,11,.15);border:1px solid rgba(184,134,11,.3);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--gold2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:20px;}
+.login-icon{font-size:52px;margin-bottom:16px;}
+.login-card h1{font-family:'Playfair Display',serif;color:#fff;font-size:26px;font-weight:800;margin-bottom:6px;}
+.login-card p{color:rgba(255,255,255,.4);font-size:13px;margin-bottom:28px;line-height:1.6;}
+.google-btn{width:100%;padding:14px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600;color:#fff;transition:all .15s;}
+.google-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);}
+.login-err{background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);border-radius:10px;padding:10px 13px;font-size:13px;color:#fca5a5;margin-bottom:14px;display:none;}
+.login-note{color:rgba(255,255,255,.2);font-size:11px;margin-top:16px;}
 
-/* ── PIN SCREEN ── */
-#v-pin{min-height:100vh;background:linear-gradient(160deg,#0d3d3d 0%,#1a2744 100%);display:flex;align-items:center;justify-content:center;padding:20px;}
-.pin-card{background:#fff;border-radius:24px;padding:32px 24px;width:100%;max-width:340px;text-align:center;}
-.pin-logo{font-size:44px;margin-bottom:14px;}
-.pin-school-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:6px;line-height:1.2;}
-.pin-school-sub{font-size:13px;color:var(--ink3);margin-bottom:26px;line-height:1.5;}
-.pin-err{background:var(--redL);color:var(--red);border-radius:10px;padding:10px;font-size:13px;margin-bottom:14px;display:none;}
-.pin-dots{display:flex;gap:14px;justify-content:center;margin-bottom:22px;}
-.pin-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);transition:all .2s;}
-.pin-dot.filled{background:var(--ink);border-color:var(--ink);}
-.pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-.pk{padding:18px;border-radius:14px;border:1.5px solid var(--border);background:var(--paper);font-size:22px;font-weight:700;color:var(--ink);cursor:pointer;transition:all .15s;font-family:'Playfair Display',serif;-webkit-tap-highlight-color:transparent;}
-.pk:active{background:var(--ink);color:#fff;transform:scale(.94);}
-.pk.del{font-size:16px;color:var(--ink3);}
-.pk.empty{border:none;background:transparent;cursor:default;}
-.pk:disabled{opacity:.5;}
+/* ── SHELL ── */
+#v-admin{display:flex;min-height:100vh;}
 
-/* ── SCHOOL DASHBOARD ── */
-#v-school{min-height:100vh;}
-.school-topbar{background:var(--ink);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;}
-.school-top-name{font-family:'Playfair Display',serif;color:#fff;font-size:16px;font-weight:700;}
-.school-top-sub{color:rgba(255,255,255,.45);font-size:11px;margin-top:2px;}
-.lock-btn{background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);border-radius:8px;padding:7px 12px;font-size:12px;cursor:pointer;font-family:'Outfit',sans-serif;}
+/* SIDEBAR */
+.sidebar{width:230px;flex-shrink:0;background:var(--ink);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:50;}
+.sb-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.05);}
+.sb-logo-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(184,134,11,.15);border:1px solid rgba(184,134,11,.25);border-radius:8px;padding:4px 10px;font-size:10px;font-weight:700;color:var(--gold2);letter-spacing:.5px;margin-bottom:10px;}
+.sb-logo-name{font-family:'Playfair Display',serif;color:#fff;font-size:16px;font-weight:700;line-height:1.2;}
+.sb-logo-sub{color:rgba(255,255,255,.3);font-size:11px;margin-top:3px;}
+.sb-nav{flex:1;padding:14px 0;overflow-y:auto;}
+.sb-section{font-size:9px;font-weight:700;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:1px;padding:12px 20px 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;color:rgba(255,255,255,.4);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border-left:3px solid transparent;position:relative;}
+.nav-item:hover{color:rgba(255,255,255,.75);background:rgba(255,255,255,.03);}
+.nav-item.active{color:#fff;background:rgba(255,255,255,.06);border-left-color:var(--gold2);}
+.nav-item .ni{width:18px;text-align:center;font-size:15px;}
+.nav-badge{position:absolute;right:16px;background:var(--red2);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;animation:pulse 2s infinite;}
+.sb-footer{padding:14px 20px;border-top:1px solid rgba(255,255,255,.05);}
+.sb-user{display:flex;align-items:center;gap:10px;}
+.sb-avatar{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0;}
+.sb-uname{color:rgba(255,255,255,.6);font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sb-signout{background:none;border:none;color:rgba(255,255,255,.25);cursor:pointer;font-size:16px;transition:color .15s;}
+.sb-signout:hover{color:rgba(255,255,255,.7);}
 
-/* TAB BAR */
-.tab-bar{display:flex;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
-.tab-btn{flex:1;padding:13px;border:none;background:none;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;}
-.tab-btn.active{color:var(--saffron);border-bottom-color:var(--saffron);}
-.tab-content{display:none;padding:16px;}
-.tab-content.active{display:block;}
+/* MAIN */
+.main{margin-left:230px;flex:1;min-height:100vh;}
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+.topbar-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.refresh-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;color:var(--ink3);cursor:pointer;transition:all .15s;}
+.refresh-btn:hover{border-color:var(--ink3);}
+.content{padding:24px 28px;}
 
-/* ENTRY FORM */
-.date-strip{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:14px;scrollbar-width:none;}
-.date-strip::-webkit-scrollbar{display:none;}
-.date-pill{flex-shrink:0;padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;font-size:11px;font-weight:600;color:var(--ink3);background:#fff;text-align:center;min-width:46px;-webkit-tap-highlight-color:transparent;}
-.date-pill.active{background:var(--ink);color:#fff;border-color:var(--ink);}
-.date-pill.submitted{background:var(--greenL);color:var(--green);border-color:rgba(26,122,74,.2);}
-.date-pill .dn{font-size:15px;font-weight:700;display:block;}
-.date-pill .dd{font-size:9px;opacity:.7;}
-.section-card{background:#fff;border-radius:14px;padding:16px;box-shadow:var(--shadow);margin-bottom:12px;}
-.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.sec-name{font-weight:700;font-size:15px;color:var(--ink);}
-.sec-range{font-size:11px;color:var(--ink3);background:var(--paper2);padding:3px 8px;border-radius:6px;}
-.att-input{width:100%;text-align:center;font-size:40px;font-weight:700;font-family:'Playfair Display',serif;color:var(--ink);border:2px solid var(--border);border-radius:12px;padding:14px;background:var(--paper);transition:border .15s;-webkit-appearance:none;}
-.att-input:focus{border-color:var(--saffron2);background:#fff;outline:none;}
-.supply-row{display:flex;gap:8px;margin-top:8px;}
-.supply-btn{flex:1;padding:11px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;font-size:13px;transition:all .15s;background:#fff;color:var(--ink3);-webkit-tap-highlight-color:transparent;}
-.supply-btn.yes{border-color:var(--green);background:var(--greenL);color:var(--green);}
-.supply-btn.no{border-color:var(--red);background:var(--redL);color:var(--red);}
-.total-card{background:var(--ink);border-radius:14px;padding:16px;color:#fff;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
-.total-big{font-family:'Playfair Display',serif;font-size:42px;font-weight:700;}
-.total-sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:4px;}
-.submit-btn{width:100%;padding:16px;border-radius:12px;background:var(--saffron);border:none;color:#fff;font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent;}
-.submit-btn:active{background:var(--saffron2);}
-.submit-btn:disabled{background:var(--border);color:var(--ink3);}
-.submit-note{text-align:center;font-size:12px;color:var(--ink3);margin-top:10px;}
+/* ── PANELS ── */
+.panel{display:none;}
+.panel.active{display:block;}
 
-/* MONTH LOG */
-.month-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
-.ms-card{background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:var(--shadow);}
-.ms-num{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;}
-.ms-label{font-size:10px;color:var(--ink3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:3px;}
-.log-list{background:#fff;border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
-.log-header{background:var(--ink);padding:14px 16px;color:#fff;}
-.log-header-t{font-weight:700;font-size:14px;}
-.log-header-s{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px;}
-.log-row{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--paper2);gap:12px;}
-.log-row:last-child{border-bottom:none;}
-.log-date-box{width:42px;height:42px;border-radius:11px;background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;}
-.log-day-n{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;line-height:1;}
-.log-day-m{font-size:9px;color:var(--ink3);font-weight:600;text-transform:uppercase;}
-.log-info{flex:1;}
-.log-total{font-weight:700;font-size:14px;}
-.log-detail{font-size:11px;color:var(--ink3);margin-top:2px;}
-.log-chips{display:flex;gap:4px;}
-.chip{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600;}
-.chip-green{background:var(--greenL);color:var(--green);}
-.chip-teal{background:var(--tealL);color:var(--teal);}
-.chip-gray{background:var(--paper2);color:var(--ink3);}
+/* ── STATS GRID ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+@media(max-width:900px){.stats-grid{grid-template-columns:1fr 1fr;}}
+.stat-box{background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.stat-box::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0;}
+.stat-box.gold::after{background:linear-gradient(90deg,var(--gold),var(--gold2));}
+.stat-box.green::after{background:linear-gradient(90deg,#16a34a,#22c55e);}
+.stat-box.red::after{background:linear-gradient(90deg,#dc2626,#f87171);}
+.stat-box.blue::after{background:linear-gradient(90deg,#2563eb,#60a5fa);}
+.stat-box.teal::after{background:linear-gradient(90deg,#0d6e6e,#14b8a6);}
+.stat-icon{font-size:22px;margin-bottom:10px;}
+.stat-num{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--ink);line-height:1;}
+.stat-label{font-size:12px;color:var(--ink3);margin-top:4px;font-weight:500;}
+.stat-sub{font-size:11px;margin-top:6px;font-weight:600;}
+.stat-sub.up{color:var(--green2);}
+.stat-sub.pend{color:var(--amber);}
+
+/* ── REVENUE CHART ── */
+.chart-wrap{background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:24px;}
+.chart-title{font-weight:700;font-size:15px;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:120px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.bar{width:100%;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--gold2),var(--gold));min-height:4px;transition:height .3s;}
+.bar-label{font-size:10px;color:var(--ink3);font-weight:600;}
+.bar-val{font-size:10px;font-weight:700;color:var(--ink);}
+
+/* ── TABLE ── */
+.card{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.card-header-title{font-weight:700;font-size:15px;color:var(--ink);}
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;padding:11px 16px;text-align:left;border-bottom:2px solid var(--paper2);white-space:nowrap;background:var(--paper);}
+td{padding:14px 16px;border-bottom:1px solid var(--paper2);font-size:13px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#fafaf8;}
+
+/* ── STATUS BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;}
+.badge-active{background:var(--greenL);color:var(--green);}
+.badge-active::before{background:var(--green2);}
+.badge-pending{background:var(--amberL);color:var(--amber);}
+.badge-pending::before{background:#f59e0b;animation:pulse 1.5s infinite;}
+.badge-expired{background:var(--redL);color:var(--red);}
+.badge-expired::before{background:var(--red2);}
+
+/* ── ACTION BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;font-size:12px;transition:all .15s;white-space:nowrap;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.btn-activate{background:var(--greenL);color:var(--green);border:1px solid rgba(22,101,52,.2);}
+.btn-activate:hover:not(:disabled){background:#bbf7d0;}
+.btn-expire{background:var(--redL);color:var(--red);border:1px solid rgba(153,27,27,.2);}
+.btn-expire:hover:not(:disabled){background:#fecaca;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#fff;box-shadow:0 2px 8px rgba(184,134,11,.3);}
+.btn-gold:hover:not(:disabled){box-shadow:0 4px 16px rgba(184,134,11,.4);}
+.btn-ink{background:var(--ink);color:#fff;}
+.btn-ink:hover:not(:disabled){background:var(--ink2);}
+.btn-outline{background:transparent;color:var(--ink);border:1.5px solid var(--border);}
+.btn-outline:hover:not(:disabled){border-color:var(--ink3);}
+.btn-sm{padding:6px 12px;font-size:11px;}
+
+/* ── SEARCH ── */
+.search-input{padding:9px 13px;border-radius:9px;border:1.5px solid var(--border);font-family:'Outfit',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border .15s;width:220px;}
+.search-input:focus{border-color:var(--gold2);}
+
+/* ── FILTER TABS ── */
+.filter-tabs{display:flex;gap:6px;flex-wrap:wrap;}
+.ftab{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);font-size:12px;font-weight:600;color:var(--ink3);cursor:pointer;transition:all .15s;background:#fff;}
+.ftab.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.ftab.pend{border-color:rgba(217,119,6,.3);color:var(--amber);}
+.ftab.pend.active{background:var(--amber);color:#fff;border-color:var(--amber);}
+
+/* ── CONTRACTOR DETAIL MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal-bg.hidden{display:none;}
+.modal{background:#fff;border-radius:20px;padding:28px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);}
+.modal-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:18px;}
+.detail-row{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--paper2);font-size:13px;}
+.detail-row:last-child{border-bottom:none;}
+.detail-label{color:var(--ink3);font-weight:600;flex-shrink:0;margin-right:12px;}
+.detail-val{color:var(--ink);font-weight:500;text-align:right;}
+.modal-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
+
+/* ── PAYMENT LOG ── */
+.pay-form{background:var(--paper);border-radius:12px;padding:16px;margin-top:14px;}
+.pay-form-title{font-weight:700;font-size:13px;color:var(--ink);margin-bottom:12px;}
+.pay-form input,
+.pay-form select{width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid var(--border);font-family:'Outfit',sans-serif;font-size:13px;margin-bottom:10px;outline:none;}
+.pay-form input:focus{border-color:var(--gold2);}
+
+/* ── REVENUE PANEL ── */
+.rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.rev-card{background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--shadow);}
+.rev-card-title{font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;}
+.rev-big{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:var(--ink);}
+.rev-sub{font-size:12px;color:var(--ink3);margin-top:4px;}
+.pay-log-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--paper2);font-size:13px;}
+.pay-log-row:last-child{border-bottom:none;}
+.pay-name{font-weight:600;color:var(--ink);}
+.pay-date{font-size:11px;color:var(--ink3);margin-top:2px;}
+.pay-amt{font-weight:700;color:var(--green);}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:48px 20px;color:var(--ink3);}
+.empty-icon{font-size:44px;margin-bottom:12px;}
+.empty-txt{font-size:14px;line-height:1.6;}
+
+/* ── ALERT ── */
 .alert{border-radius:10px;padding:10px 13px;font-size:13px;margin-bottom:12px;line-height:1.5;}
 .alert-ok{background:var(--greenL);color:var(--green);}
 .alert-err{background:var(--redL);color:var(--red);}
-.alert-warn{background:#fffbeb;color:#d97706;}
+.alert-warn{background:var(--amberL);color:var(--amber);}
 
-/* Enrollment form */
-.enroll-card{background:#fff;border-radius:14px;padding:16px;box-shadow:var(--shadow);margin-bottom:12px;}
-.enroll-title{font-weight:700;font-size:15px;margin-bottom:14px;color:var(--ink);}
-.enroll-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.enroll-label{font-size:14px;font-weight:500;color:var(--ink);}
-.enroll-input{width:90px;text-align:center;padding:9px;border-radius:9px;border:1.5px solid var(--border);font-size:16px;font-weight:700;font-family:'Playfair Display',serif;}
+/* ── NOTICE BANNER ── */
+.notice-banner{background:linear-gradient(135deg,var(--ink),var(--ink2));border-radius:var(--r);padding:20px 24px;color:#fff;margin-bottom:24px;display:flex;align-items:center;gap:16px;}
+.notice-banner-icon{font-size:28px;flex-shrink:0;}
+.notice-banner-title{font-weight:700;font-size:15px;margin-bottom:3px;}
+.notice-banner-sub{font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;}
+
+@media(max-width:768px){
+  .sidebar{width:100%;height:auto;position:relative;flex-direction:row;}
+  .main{margin-left:0;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .content{padding:16px;}
+  .rev-grid{grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
 
-<div id="loader"><div class="spin"></div><div class="loader-txt">Loading school…</div></div>
+<div id="loader"><div class="loader-ring"></div><div class="loader-txt">MDM Super Admin</div></div>
 
-<!-- PIN ENTRY -->
-<div id="v-pin" class="view">
-  <div class="pin-card fade-up">
-    <div class="pin-logo">🏫</div>
-    <div class="pin-school-name" id="pin-school-name">School Entry</div>
-    <div class="pin-school-sub" id="pin-school-sub">Enter your 4-digit PIN to access the attendance dashboard.</div>
-    <div class="pin-err" id="pin-err">Incorrect PIN. Please try again.</div>
-    <div class="pin-dots" id="pin-dots">
-      <div class="pin-dot" id="pd0"></div>
-      <div class="pin-dot" id="pd1"></div>
-      <div class="pin-dot" id="pd2"></div>
-      <div class="pin-dot" id="pd3"></div>
-    </div>
-    <div class="pin-keypad" id="pin-keypad">
-      <div class="pk" onclick="pkPress('1')">1</div>
-      <div class="pk" onclick="pkPress('2')">2</div>
-      <div class="pk" onclick="pkPress('3')">3</div>
-      <div class="pk" onclick="pkPress('4')">4</div>
-      <div class="pk" onclick="pkPress('5')">5</div>
-      <div class="pk" onclick="pkPress('6')">6</div>
-      <div class="pk" onclick="pkPress('7')">7</div>
-      <div class="pk" onclick="pkPress('8')">8</div>
-      <div class="pk" onclick="pkPress('9')">9</div>
-      <div class="pk empty"></div>
-      <div class="pk" onclick="pkPress('0')">0</div>
-      <div class="pk del" onclick="pkDel()">⌫</div>
-    </div>
-    <div style="font-size:11px;color:var(--ink3);margin-top:18px;">MDM Billing Portal · A&N Islands</div>
+<!-- ══ LOGIN ══ -->
+<div id="v-login" style="display:none;">
+  <div class="login-card fade-up">
+    <div class="login-badge">⭐ Super Admin</div>
+    <div class="login-icon">🛡️</div>
+    <h1>MDM Admin Panel</h1>
+    <p>Contractor management &amp; revenue dashboard for MDM Billing Portal.</p>
+    <div class="login-err" id="login-err"></div>
+    <button class="google-btn" onclick="doLogin()">
+      <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Sign in with Google
+    </button>
+    <div class="login-note">Access restricted to authorized admin only.</div>
   </div>
 </div>
 
-<!-- SCHOOL DASHBOARD -->
-<div id="v-school" class="view">
-  <div class="school-topbar">
-    <div>
-      <div class="school-top-name" id="st-name">School</div>
-      <div class="school-top-sub" id="st-month">Loading…</div>
+<!-- ══ ADMIN SHELL ══ -->
+<div id="v-admin" style="display:none;">
+  <div class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-badge">⭐ Super Admin</div>
+      <div class="sb-logo-name">MDM Billing Portal</div>
+      <div class="sb-logo-sub">Platform Management</div>
     </div>
-    <button class="lock-btn" onclick="lockOut()">🔒 Lock</button>
-  </div>
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="showTab('entry')">✍️ Entry</button>
-    <button class="tab-btn" onclick="showTab('log')">📆 Month Log</button>
-    <button class="tab-btn" onclick="showTab('enroll')">👦 Enrolment</button>
+    <nav class="sb-nav">
+      <div class="sb-section">Overview</div>
+      <div class="nav-item active" onclick="showPanel('overview')" id="nav-overview"><span class="ni">📊</span>Dashboard</div>
+      <div class="nav-item" onclick="showPanel('contractors')" id="nav-contractors">
+        <span class="ni">👥</span>Contractors
+        <span class="nav-badge" id="pending-badge" style="display:none;">0</span>
+      </div>
+      <div class="sb-section">Finance</div>
+      <div class="nav-item" onclick="showPanel('revenue')" id="nav-revenue"><span class="ni">💰</span>Revenue</div>
+      <div class="nav-item" onclick="showPanel('payments')" id="nav-payments"><span class="ni">🧾</span>Payment Log</div>
+      <div class="sb-section">System</div>
+      <div class="nav-item" onclick="showPanel('settings')" id="nav-settings"><span class="ni">⚙️</span>Settings</div>
+    </nav>
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar" id="sb-av">A</div>
+        <div class="sb-uname" id="sb-nm">Admin</div>
+        <button class="sb-signout" onclick="doSignOut()" title="Sign out">↩</button>
+      </div>
+    </div>
   </div>
 
-  <!-- TAB: ENTRY -->
-  <div class="tab-content active" id="tab-entry">
-    <div id="entry-alert"></div>
-    <!-- Date strip -->
-    <div class="date-strip" id="date-strip"></div>
-    <!-- Sections -->
-    <div id="section-cards"></div>
-    <!-- Supply -->
-    <div class="section-card" id="supply-card" style="display:none;">
-      <div class="sec-head" style="margin-bottom:10px;"><div class="sec-name">📦 Supply Today</div></div>
-      <div id="supply-egg-wrap" style="margin-bottom:12px;">
-        <div style="font-weight:600;font-size:13px;margin-bottom:7px;">🥚 Boiled Egg Supplied?</div>
-        <div class="supply-row">
-          <button class="supply-btn" id="egg-yes" onclick="setSupply('egg',true)">✓ Yes, supplied</button>
-          <button class="supply-btn" id="egg-no" onclick="setSupply('egg',false)">✗ Not today</button>
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div class="topbar-right">
+        <button class="refresh-btn" onclick="loadAll()">🔄 Refresh</button>
+        <div style="font-size:12px;color:var(--ink3);" id="last-updated"></div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── PANEL: OVERVIEW ── -->
+      <div class="panel active" id="panel-overview">
+        <div class="notice-banner">
+          <div class="notice-banner-icon">🍱</div>
+          <div>
+            <div class="notice-banner-title">MDM Billing Portal — Admin Control Centre</div>
+            <div class="notice-banner-sub">Activate contractors, track revenue, manage your platform from one place.</div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-box gold">
+            <div class="stat-icon">👥</div>
+            <div class="stat-num" id="st-total">—</div>
+            <div class="stat-label">Total Contractors</div>
+            <div class="stat-sub up" id="st-total-sub">Loading…</div>
+          </div>
+          <div class="stat-box green">
+            <div class="stat-icon">✅</div>
+            <div class="stat-num" id="st-active">—</div>
+            <div class="stat-label">Active Subscribers</div>
+            <div class="stat-sub up" id="st-active-sub">Paying customers</div>
+          </div>
+          <div class="stat-box red">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-num" id="st-pending">—</div>
+            <div class="stat-label">Pending Activation</div>
+            <div class="stat-sub pend" id="st-pending-sub">Needs your action</div>
+          </div>
+          <div class="stat-box teal">
+            <div class="stat-icon">💰</div>
+            <div class="stat-num" id="st-revenue">—</div>
+            <div class="stat-label">Total Revenue</div>
+            <div class="stat-sub up" id="st-rev-sub">This session</div>
+          </div>
+        </div>
+
+        <!-- Revenue bar chart -->
+        <div class="chart-wrap">
+          <div class="chart-title">
+            <span>📈 Monthly Revenue</span>
+            <span style="font-size:12px;color:var(--ink3);" id="chart-total-label">—</span>
+          </div>
+          <div class="bar-chart" id="rev-chart"></div>
+        </div>
+
+        <!-- Pending contractors — quick action -->
+        <div class="card" id="pending-quick-card">
+          <div class="card-header">
+            <div class="card-header-title">⏳ Pending Activation</div>
+            <button class="btn btn-outline btn-sm" onclick="showPanel('contractors');filterContractors('pending')">View All →</button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Contractor</th><th>Email</th><th>Signed Up</th><th>Action</th></tr></thead>
+              <tbody id="pending-tbody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
-      <div id="supply-banana-wrap">
-        <div style="font-weight:600;font-size:13px;margin-bottom:7px;">🍌 Ripened Banana Supplied?</div>
-        <div class="supply-row">
-          <button class="supply-btn" id="ban-yes" onclick="setSupply('banana',true)">✓ Yes, supplied</button>
-          <button class="supply-btn" id="ban-no" onclick="setSupply('banana',false)">✗ Not today</button>
+
+      <!-- ── PANEL: CONTRACTORS ── -->
+      <div class="panel" id="panel-contractors">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-title">All Contractors</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+              <input class="search-input" id="search-input" placeholder="Search name or email…" oninput="filterTable()"/>
+              <div class="filter-tabs">
+                <div class="ftab active" onclick="setFilter('all',this)">All</div>
+                <div class="ftab pend" onclick="setFilter('pending',this)">⏳ Pending</div>
+                <div class="ftab" onclick="setFilter('active',this)">✅ Active</div>
+                <div class="ftab" onclick="setFilter('expired',this)">❌ Expired</div>
+              </div>
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Contractor / Firm</th>
+                  <th>Email</th>
+                  <th>Location</th>
+                  <th>Schools</th>
+                  <th>Status</th>
+                  <th>Session</th>
+                  <th>Joined</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="contractors-tbody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
-    <!-- Total -->
-    <div class="total-card" id="total-card">
-      <div><div class="total-sub">Total Students Today</div><div class="total-big" id="total-display">0</div></div>
-      <div style="text-align:right;" id="total-breakdown"></div>
-    </div>
-    <button class="submit-btn" id="submit-btn" onclick="submitAttendance()">✓ Submit Attendance</button>
-    <div class="submit-note" id="submit-note">Enter today's attendance and submit.</div>
-  </div>
 
-  <!-- TAB: MONTH LOG -->
-  <div class="tab-content" id="tab-log">
-    <div class="month-summary" id="month-summary"></div>
-    <div class="log-list" id="log-list">
-      <div class="log-header"><div class="log-header-t">Attendance Log</div><div class="log-header-s">Loading…</div></div>
-    </div>
-  </div>
-
-  <!-- TAB: ENROLMENT -->
-  <div class="tab-content" id="tab-enroll">
-    <div class="alert alert-warn" style="margin-bottom:14px;">
-      📋 Enter the <b>current enrolment</b> at the beginning of each month. This data appears on your Cookum Helper bill.
-    </div>
-    <div class="enroll-card">
-      <div class="enroll-title">👦 Monthly Enrolment</div>
-      <div id="enroll-alert"></div>
-      <div class="enroll-row"><div class="enroll-label">Boys</div><input class="enroll-input" id="enroll-boys" type="number" min="0" inputmode="numeric" placeholder="0"/></div>
-      <div class="enroll-row"><div class="enroll-label">Girls</div><input class="enroll-input" id="enroll-girls" type="number" min="0" inputmode="numeric" placeholder="0"/></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--paper2);margin-top:4px;">
-        <div style="font-weight:700;font-size:15px;">Total</div>
-        <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--ink);" id="enroll-total">0</div>
+      <!-- ── PANEL: REVENUE ── -->
+      <div class="panel" id="panel-revenue">
+        <div class="rev-grid">
+          <div class="rev-card">
+            <div class="rev-card-title">Total Revenue Collected</div>
+            <div class="rev-big" id="rev-total">₹0</div>
+            <div class="rev-sub" id="rev-total-sub">All time</div>
+          </div>
+          <div class="rev-card">
+            <div class="rev-card-title">Active Subscribers</div>
+            <div class="rev-big" id="rev-active-count">0</div>
+            <div class="rev-sub">Currently paying</div>
+          </div>
+          <div class="rev-card">
+            <div class="rev-card-title">This Month</div>
+            <div class="rev-big" id="rev-this-month">₹0</div>
+            <div class="rev-sub" id="rev-month-label">—</div>
+          </div>
+          <div class="rev-card">
+            <div class="rev-card-title">Expected Next Renewal</div>
+            <div class="rev-big" id="rev-renewal">₹0</div>
+            <div class="rev-sub">Based on active subscribers</div>
+          </div>
+        </div>
+        <div class="chart-wrap" style="margin-bottom:0;">
+          <div class="chart-title"><span>📊 Revenue by Month</span></div>
+          <div class="bar-chart" id="rev-chart-2"></div>
+        </div>
       </div>
-      <button class="submit-btn" style="margin-top:8px;" onclick="saveEnrolment()">Save Enrolment</button>
+
+      <!-- ── PANEL: PAYMENT LOG ── -->
+      <div class="panel" id="panel-payments">
+        <div class="card" style="margin-bottom:18px;">
+          <div class="card-header">
+            <div class="card-header-title">➕ Record New Payment</div>
+          </div>
+          <div style="padding:18px;">
+            <div id="pay-form-alert"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+              <div>
+                <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;">Contractor</div>
+                <select id="pay-contractor" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid var(--border);font-family:'Outfit',sans-serif;font-size:13px;">
+                  <option value="">— Select Contractor —</option>
+                </select>
+              </div>
+              <div>
+                <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;">Amount (₹)</div>
+                <input id="pay-amount" type="number" value="2499" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid var(--border);font-family:'Outfit',sans-serif;font-size:13px;"/>
+              </div>
+              <div>
+                <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;">Payment Date</div>
+                <input id="pay-date" type="date" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid var(--border);font-family:'Outfit',sans-serif;font-size:13px;"/>
+              </div>
+              <div>
+                <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;">Payment Mode</div>
+                <select id="pay-mode" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid var(--border);font-family:'Outfit',sans-serif;font-size:13px;">
+                  <option>UPI</option>
+                  <option>Cash</option>
+                  <option>Bank Transfer</option>
+                  <option>WhatsApp Pay</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-bottom:12px;">
+              <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;">Note (optional)</div>
+              <input id="pay-note" type="text" placeholder="e.g. Session 2025-26 payment" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid var(--border);font-family:'Outfit',sans-serif;font-size:13px;"/>
+            </div>
+            <button class="btn btn-gold" onclick="recordPayment()">💰 Record Payment &amp; Activate</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-header-title">📋 Payment History</div></div>
+          <div id="pay-log-wrap" style="padding:0 20px;">
+            <div class="empty"><div class="empty-icon">💳</div><div class="empty-txt">No payments recorded yet.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PANEL: SETTINGS ── -->
+      <div class="panel" id="panel-settings">
+        <div class="card" style="max-width:480px;">
+          <div class="card-header"><div class="card-header-title">⚙️ Platform Settings</div></div>
+          <div style="padding:18px;">
+            <div id="settings-alert"></div>
+            <div style="margin-bottom:13px;">
+              <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;">Your UPI ID</div>
+              <input id="set-upi" type="text" placeholder="yourname@upi" style="width:100%;padding:10px 13px;border-radius:9px;border:1.5px solid var(--border);font-size:14px;font-family:'Outfit',sans-serif;"/>
+            </div>
+            <div style="margin-bottom:13px;">
+              <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;">WhatsApp Number</div>
+              <input id="set-wa" type="tel" placeholder="919474239266" style="width:100%;padding:10px 13px;border-radius:9px;border:1.5px solid var(--border);font-size:14px;font-family:'Outfit',sans-serif;"/>
+            </div>
+            <div style="margin-bottom:13px;">
+              <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;">Session Fee (₹)</div>
+              <input id="set-fee" type="number" value="2499" style="width:100%;padding:10px 13px;border-radius:9px;border:1.5px solid var(--border);font-size:14px;font-family:'Outfit',sans-serif;"/>
+            </div>
+            <div style="margin-bottom:16px;">
+              <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;">Admin Email (your Gmail)</div>
+              <input id="set-admin-email" type="email" placeholder="you@gmail.com" style="width:100%;padding:10px 13px;border-radius:9px;border:1.5px solid var(--border);font-size:14px;font-family:'Outfit',sans-serif;"/>
+              <div style="font-size:11px;color:var(--ink3);margin-top:5px;">Only this email can access the super admin panel.</div>
+            </div>
+            <button class="btn btn-ink" onclick="saveSettings()">Save Settings</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- CONTRACTOR DETAIL MODAL -->
+<div class="modal-bg hidden" id="detail-modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-firm-name">Contractor Details</div>
+    <div id="modal-alert"></div>
+    <div id="modal-details"></div>
+    <div class="modal-actions" id="modal-actions"></div>
+    <div style="margin-top:14px;">
+      <button class="btn btn-outline btn-sm" onclick="closeModal()">Close</button>
     </div>
   </div>
 </div>
 
 <script>
-/* ═══════════════════════════
-   STATE
-═══════════════════════════ */
-let db=null;
-let contractorId=null, schoolId=null;
-let schoolDoc=null, contractorDoc=null;
-let monthAttendance=[];
-let selectedDate=null;
-let supplyState={egg:null,banana:null};
-let pinEntry='';
-const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-const MONTHS_S=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const MONTHS_F=['January','February','March','April','May','June','July','August','September','October','November','December'];
+/* ═══════════════════════════════
+   CONFIG — PUT YOUR FIREBASE CONFIG HERE
+   (same as the one from your index.html)
+═══════════════════════════════ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAvI7f2iIz4eGpY8_U7rzk56vTXgmbxxOM",
+  authDomain: "mdm-billing-26.firebaseapp.com",
+  projectId: "mdm-billing-26",
+  appId: "1:1077975540746:web:cc35a43e52ceb601eb6bf3"
+};
 
-/* ═══════════════════════════
+// YOUR Gmail — only this can log in to super admin
+const ADMIN_EMAIL = ""; // Fill in your Gmail here e.g. "yourname@gmail.com"
+const SESSION_FEE = 2499;
+
+/* ═══════════════════════════════
+   STATE
+═══════════════════════════════ */
+let db=null, auth=null;
+let contractors=[], payments=[];
+let currentFilter='all';
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+/* ═══════════════════════════════
    INIT
-═══════════════════════════ */
-window.addEventListener('DOMContentLoaded',async()=>{
-  const sp=new URLSearchParams(location.search);
-  schoolId=sp.get('school');
-  if(!schoolId){
-    document.body.innerHTML='<div style="padding:40px;text-align:center;font-size:16px;color:#6b7394;">No school ID in URL. Please use the link provided by your contractor.</div>';
-    return;
-  }
-  // Load Firebase config
-  const saved=localStorage.getItem('mdm_fb');
-  if(!saved){
-    // Try to derive from parent
-    document.body.innerHTML='<div style="padding:40px;text-align:center;"><p style="color:#6b7394;font-size:14px;">Please open the main MDM portal first to configure Firebase, then use the school link.</p></div>';
-    return;
-  }
+═══════════════════════════════ */
+window.addEventListener('DOMContentLoaded',()=>{
   try{
-    const cfg=JSON.parse(saved);
-    if(!firebase.apps.length) firebase.initializeApp(cfg);
+    if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     db=firebase.firestore();
-    await findSchool();
+    auth=firebase.auth();
+    auth.onAuthStateChanged(onAuth);
   }catch(e){
-    showErr('School not found. Please check your link.');
+    alert('Firebase config error: '+e.message);
+    hideLoader();
   }
-  hideLoader();
 });
 
-async function findSchool(){
-  // Search all contractors for this schoolId
-  // We need contractorId — encode it in the school URL as ?school=CONTRACTORID_SCHOOLID
-  // or store contractorId in school doc
-  // schoolId format: we store it with contractorId lookup
-  // Try fetching from a schools collection group
+async function onAuth(user){
+  hideLoader();
+  if(!user){show('v-login');return;}
+  // Check if admin
+  const adminEmail=await getAdminEmail();
+  if(adminEmail && user.email.toLowerCase()!==adminEmail.toLowerCase()){
+    alert('Access denied. This panel is restricted to the platform admin only.\n\nYou are signed in as: '+user.email);
+    await auth.signOut();
+    show('v-login');
+    return;
+  }
+  document.getElementById('sb-av').textContent=user.email[0].toUpperCase();
+  document.getElementById('sb-nm').textContent=user.email;
+  show('v-admin');
+  await loadAll();
+  loadSettings();
+}
+
+async function getAdminEmail(){
   try{
-    const snap=await db.collectionGroup('schools').where(firebase.firestore.FieldPath.documentId(),'==',schoolId).get();
-    if(snap.empty){
-      // Try path-based (schoolId = docId, contractorId stored inside)
-      throw new Error('Not found via group');
-    }
-    const doc=snap.docs[0];
-    schoolDoc={id:doc.id,...doc.data()};
-    // Get contractorId from path: contractors/{cid}/schools/{sid}
-    contractorId=doc.ref.parent.parent.id;
-    // Load contractor
-    const cSnap=await db.doc('contractors/'+contractorId).get();
-    contractorDoc=cSnap.exists?cSnap.data():{};
-    initPinScreen();
-  }catch(e){
-    // Try direct lookup using school ID stored in Firestore as encoded
-    // Fallback: prompt for contractorId (shouldn't happen in production)
-    document.getElementById('pin-school-name').textContent='School Not Found';
-    document.getElementById('pin-school-sub').textContent='This link appears to be invalid. Please contact your contractor.';
-    showView('v-pin');
-  }
+    const snap=await db.doc('admin/settings').get();
+    return snap.exists?snap.data().adminEmail||'':'';
+  }catch(e){return '';}
 }
 
-function initPinScreen(){
-  document.getElementById('pin-school-name').textContent=schoolDoc.name||'Your School';
-  document.getElementById('pin-school-sub').textContent='Enter your 4-digit PIN to access the attendance dashboard.';
-  showView('v-pin');
-}
-
-/* ═══════════════════════════
-   PIN
-═══════════════════════════ */
-function pkPress(d){
-  if(pinEntry.length>=4)return;
-  pinEntry+=d;
-  updatePinDots();
-  if(pinEntry.length===4) setTimeout(checkPin,120);
-}
-function pkDel(){
-  pinEntry=pinEntry.slice(0,-1);
-  updatePinDots();
-  hidePinErr();
-}
-function updatePinDots(){
-  for(let i=0;i<4;i++){
-    document.getElementById('pd'+i).classList.toggle('filled',i<pinEntry.length);
-  }
-}
-function hidePinErr(){document.getElementById('pin-err').style.display='none';}
-function showPinErr(){
-  document.getElementById('pin-err').style.display='block';
-  pinEntry=''; updatePinDots();
-}
-
-async function checkPin(){
-  if(pinEntry===schoolDoc.pin){
-    await loadSchoolDashboard();
-    showView('v-school');
-  } else {
-    showPinErr();
-  }
-}
-
-/* ═══════════════════════════
-   DASHBOARD
-═══════════════════════════ */
-async function loadSchoolDashboard(){
-  const now=new Date();
-  const monthStr=`${now.getFullYear()}-${padZ(now.getMonth()+1)}`;
-  document.getElementById('st-name').textContent=schoolDoc.name;
-  document.getElementById('st-month').textContent=MONTHS_F[now.getMonth()]+' '+now.getFullYear();
-  // Load attendance
-  const snap=await db.collection('contractors/'+contractorId+'/attendance')
-    .where('schoolId','==',schoolId).where('month','==',monthStr).get();
-  monthAttendance=snap.docs.map(d=>({id:d.id,...d.data()}));
-  buildDateStrip();
-  selectDate(todayStr());
-  buildMonthLog();
-  loadEnrolment();
-  buildSupplyCard();
-}
-
-function buildSupplyCard(){
-  const svc=contractorDoc.services||{};
-  document.getElementById('supply-egg-wrap').style.display=svc.egg?'block':'none';
-  document.getElementById('supply-banana-wrap').style.display=svc.banana?'block':'none';
-  document.getElementById('supply-card').style.display=(svc.egg||svc.banana)?'block':'none';
-}
-
-function buildDateStrip(){
-  const now=new Date();
-  const year=now.getFullYear(), month=now.getMonth();
-  const daysInMonth=new Date(year,month+1,0).getDate();
-  const today=now.getDate();
-  const strip=document.getElementById('date-strip');
-  strip.innerHTML='';
-  for(let d=1;d<=today;d++){
-    const date=new Date(year,month,d);
-    const dow=date.getDay();
-    if(dow===0||dow===6)continue; // skip weekends
-    const ds=`${year}-${padZ(month+1)}-${padZ(d)}`;
-    const submitted=monthAttendance.find(a=>a.date===ds);
-    const pill=document.createElement('div');
-    pill.className='date-pill'+(submitted?' submitted':'');
-    pill.innerHTML=`<span class="dn">${d}</span><span class="dd">${DAYS[dow]}</span>`;
-    pill.onclick=()=>selectDate(ds);
-    pill.dataset.date=ds;
-    strip.appendChild(pill);
-  }
-  // scroll to end
-  strip.scrollLeft=strip.scrollWidth;
-}
-
-function selectDate(ds){
-  selectedDate=ds;
-  // Update active pill
-  document.querySelectorAll('.date-pill').forEach(p=>{
-    const isActive=p.dataset.date===ds;
-    p.classList.toggle('active',isActive&&!p.classList.contains('submitted'));
-  });
-  // Load existing data for this date
-  const existing=monthAttendance.find(a=>a.date===ds);
-  renderSectionCards(existing);
-  renderSupply(existing);
-  updateTotal();
-  // Update submit button
-  const btn=document.getElementById('submit-btn');
-  const note=document.getElementById('submit-note');
-  if(existing){
-    btn.textContent='✏️ Update Attendance';
-    note.textContent='This day is already submitted. You can update it.';
-  } else {
-    btn.textContent='✓ Submit Attendance';
-    note.textContent='Enter today\'s attendance and submit.';
-  }
-}
-
-function renderSectionCards(existing){
-  const section=schoolDoc.section||'PP+P';
-  const hasPP=section.includes('PP');
-  const hasP=section.includes('P');
-  const hasUP=section.includes('UP');
-  const wrap=document.getElementById('section-cards');
-  wrap.innerHTML='';
-  const sections=[
-    {key:'prePrimary',show:hasPP,label:'🧒 Pre-Primary',range:'Nursery · PP1 · PP2 · PP3'},
-    {key:'primary',show:hasP,label:'📚 Primary',range:'Class I · II · III · IV · V'},
-    {key:'upperPrimary',show:hasUP,label:'🎓 Upper Primary',range:'Class VI · VII · VIII'}
-  ];
-  sections.filter(s=>s.show).forEach(s=>{
-    const val=existing?.[s.key]||0;
-    const card=document.createElement('div');
-    card.className='section-card';
-    card.innerHTML=`<div class="sec-head"><div class="sec-name">${s.label}</div><div class="sec-range">${s.range}</div></div>
-      <input class="att-input" type="number" id="inp-${s.key}" value="${val||''}" min="0" inputmode="numeric" placeholder="0" oninput="updateTotal()"/>
-      <div style="font-size:12px;color:var(--ink3);margin-top:7px;text-align:center;">Students present today</div>`;
-    wrap.appendChild(card);
-  });
-}
-
-function renderSupply(existing){
-  const svc=contractorDoc.services||{};
-  supplyState.egg=existing?.eggSupplied??null;
-  supplyState.banana=existing?.bananaSupplied??null;
-  if(svc.egg) updateSupplyUI('egg');
-  if(svc.banana) updateSupplyUI('banana');
-}
-
-function setSupply(type,val){
-  supplyState[type]=val;
-  updateSupplyUI(type);
-}
-
-function updateSupplyUI(type){
-  const val=supplyState[type];
-  const yes=document.getElementById(type==='egg'?'egg-yes':'ban-yes');
-  const no=document.getElementById(type==='egg'?'egg-no':'ban-no');
-  if(!yes||!no)return;
-  yes.className='supply-btn'+(val===true?' yes':'');
-  no.className='supply-btn'+(val===false?' no':'');
-}
-
-function updateTotal(){
-  const ids=['prePrimary','primary','upperPrimary'];
-  let total=0, parts=[];
-  const labels=['PP','P','UP'];
-  ids.forEach((k,i)=>{
-    const el=document.getElementById('inp-'+k);
-    if(el){const v=parseInt(el.value)||0;total+=v;if(v>0)parts.push(labels[i]+': '+v);}
-  });
-  document.getElementById('total-display').textContent=total;
-  document.getElementById('total-breakdown').innerHTML=`<div style="font-size:12px;color:rgba(255,255,255,.5);">${parts.join(' · ')||'No data'}</div>`;
-}
-
-async function submitAttendance(){
-  const now=new Date();
-  const monthStr=`${now.getFullYear()}-${padZ(now.getMonth()+1)}`;
-  const ids={prePrimary:'inp-prePrimary',primary:'inp-primary',upperPrimary:'inp-upperPrimary'};
-  const data={schoolId,date:selectedDate,month:monthStr,submittedAt:new Date().toISOString()};
-  Object.entries(ids).forEach(([k,id])=>{const el=document.getElementById(id);if(el)data[k]=parseInt(el.value)||0;});
-  const svc=contractorDoc.services||{};
-  if(svc.egg) data.eggSupplied=supplyState.egg===true;
-  if(svc.banana) data.bananaSupplied=supplyState.banana===true;
-  const btn=document.getElementById('submit-btn');
-  btn.disabled=true; btn.textContent='Submitting…';
-  showAlert('entry-alert','','');
+/* ═══════════════════════════════
+   AUTH
+═══════════════════════════════ */
+async function doLogin(){
+  const err=document.getElementById('login-err');
+  err.style.display='none';
   try{
-    const existing=monthAttendance.find(a=>a.date===selectedDate);
-    if(existing){
-      await db.doc('contractors/'+contractorId+'/attendance/'+existing.id).update(data);
-      const idx=monthAttendance.findIndex(a=>a.id===existing.id);
-      monthAttendance[idx]={...existing,...data};
-    } else {
-      const ref=await db.collection('contractors/'+contractorId+'/attendance').add(data);
-      monthAttendance.push({id:ref.id,...data});
-    }
-    showAlert('entry-alert','ok','✓ Attendance submitted successfully!');
-    buildDateStrip();
-    selectDate(selectedDate);
-    buildMonthLog();
+    await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
   }catch(e){
-    showAlert('entry-alert','err','Error: '+e.message);
+    err.textContent=e.code==='auth/popup-closed-by-user'?'Popup closed. Please try again.':e.message;
+    err.style.display='block';
   }
-  btn.disabled=false;
+}
+async function doSignOut(){await auth.signOut(); show('v-login');}
+
+/* ═══════════════════════════════
+   LOAD DATA
+═══════════════════════════════ */
+async function loadAll(){
+  document.getElementById('last-updated').textContent='Loading…';
+  try{
+    // Load all contractors
+    const snap=await db.collection('contractors').get();
+    contractors=await Promise.all(snap.docs.map(async d=>{
+      const data={id:d.id,...d.data()};
+      // Count schools
+      try{
+        const sSnap=await db.collection('contractors/'+d.id+'/schools').get();
+        data.schoolCount=sSnap.size;
+      }catch(e){data.schoolCount=0;}
+      return data;
+    }));
+    // Load payments
+    try{
+      const pSnap=await db.collection('admin/payments/log').orderBy('date','desc').get();
+      payments=pSnap.docs.map(d=>({id:d.id,...d.data()}));
+    }catch(e){payments=[];}
+    renderAll();
+    document.getElementById('last-updated').textContent='Updated '+new Date().toLocaleTimeString('en-IN');
+  }catch(e){
+    document.getElementById('last-updated').textContent='Error loading data';
+  }
 }
 
-/* ── MONTH LOG ── */
-function buildMonthLog(){
-  const sorted=[...monthAttendance].sort((a,b)=>b.date.localeCompare(a.date));
-  const totalDays=sorted.length;
-  const eggDays=sorted.filter(a=>a.eggSupplied).length;
-  const bananaDays=sorted.filter(a=>a.bananaSupplied).length;
-  document.getElementById('month-summary').innerHTML=[
-    ['Days Done',totalDays,'var(--ink)'],
-    ['🥚 Egg Days',eggDays,'var(--saffron)'],
-    ['🍌 Banana Days',bananaDays,'var(--teal)']
-  ].map(([l,v,c])=>`<div class="ms-card"><div class="ms-num" style="color:${c}">${v}</div><div class="ms-label">${l}</div></div>`).join('');
-  const list=document.getElementById('log-list');
-  if(!sorted.length){list.innerHTML='<div style="padding:24px;text-align:center;color:var(--ink3);">No entries yet this month.</div>';return;}
-  list.innerHTML=`<div class="log-header"><div class="log-header-t">Attendance Log</div><div class="log-header-s">${totalDays} days submitted</div></div>`+
-  sorted.map(a=>{
-    const d=a.date.split('-'); const dateObj=new Date(a.date+'T00:00:00');
-    const total=(a.prePrimary||0)+(a.primary||0)+(a.upperPrimary||0);
-    const parts=[];
-    if(a.prePrimary) parts.push('PP:'+a.prePrimary);
-    if(a.primary) parts.push('P:'+a.primary);
-    if(a.upperPrimary) parts.push('UP:'+a.upperPrimary);
-    const chips=(a.eggSupplied?'<span class="chip chip-green">🥚</span>':'')+(a.bananaSupplied?'<span class="chip chip-teal">🍌</span>':'')||'<span class="chip chip-gray" style="font-size:10px;">No supply</span>';
-    return `<div class="log-row">
-      <div class="log-date-box"><div class="log-day-n">${d[2]}</div><div class="log-day-m">${MONTHS_S[dateObj.getMonth()]}</div></div>
-      <div class="log-info"><div class="log-total">${total} students</div><div class="log-detail">${parts.join(' · ')}</div></div>
-      <div class="log-chips">${chips}</div>
+/* ═══════════════════════════════
+   RENDER
+═══════════════════════════════ */
+function renderAll(){
+  updateStats();
+  renderChart('rev-chart');
+  renderChart('rev-chart-2');
+  renderPendingQuick();
+  renderContractorsTable();
+  renderRevenuePanel();
+  renderPaymentLog();
+  populateContractorSelect();
+  updatePendingBadge();
+}
+
+function updateStats(){
+  const total=contractors.length;
+  const active=contractors.filter(c=>c.status==='active').length;
+  const pending=contractors.filter(c=>c.status==='pending').length;
+  const rev=payments.reduce((s,p)=>s+(+p.amount||0),0);
+  document.getElementById('st-total').textContent=total;
+  document.getElementById('st-active').textContent=active;
+  document.getElementById('st-pending').textContent=pending;
+  document.getElementById('st-revenue').textContent='₹'+rev.toLocaleString('en-IN');
+  document.getElementById('st-total-sub').textContent=total+' registered';
+  document.getElementById('st-pending-sub').textContent=pending>0?pending+' awaiting activation':'All clear ✓';
+  // Revenue panel
+  document.getElementById('rev-total').textContent='₹'+rev.toLocaleString('en-IN');
+  document.getElementById('rev-active-count').textContent=active;
+  document.getElementById('rev-renewal').textContent='₹'+(active*SESSION_FEE).toLocaleString('en-IN');
+  // This month
+  const now=new Date();
+  const thisMonthKey=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const thisMonthRev=payments.filter(p=>p.date&&p.date.startsWith(thisMonthKey)).reduce((s,p)=>s+(+p.amount||0),0);
+  document.getElementById('rev-this-month').textContent='₹'+thisMonthRev.toLocaleString('en-IN');
+  document.getElementById('rev-month-label').textContent=MONTHS[now.getMonth()]+' '+now.getFullYear();
+}
+
+function renderChart(id){
+  // Build monthly revenue from payments
+  const monthly={};
+  payments.forEach(p=>{
+    if(!p.date)return;
+    const key=p.date.substring(0,7);
+    monthly[key]=(monthly[key]||0)+(+p.amount||0);
+  });
+  // Also count signups per month from contractors
+  const signups={};
+  contractors.forEach(c=>{
+    if(!c.createdAt)return;
+    const key=c.createdAt.substring(0,7);
+    signups[key]=(signups[key]||0)+1;
+  });
+  // Last 6 months
+  const months=[];
+  const now=new Date();
+  for(let i=5;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    months.push({key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,label:MONTHS[d.getMonth()]});
+  }
+  const vals=months.map(m=>monthly[m.key]||0);
+  const maxVal=Math.max(...vals,1);
+  const totalLabel=vals.reduce((s,v)=>s+v,0);
+  document.getElementById('chart-total-label')?.textContent && (document.getElementById('chart-total-label').textContent='₹'+totalLabel.toLocaleString('en-IN')+' (6 months)');
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.innerHTML=months.map((m,i)=>{
+    const h=Math.max((vals[i]/maxVal)*100,4);
+    return `<div class="bar-col">
+      <div class="bar-val">${vals[i]>0?'₹'+Math.round(vals[i]/1000)+'k':''}</div>
+      <div class="bar" style="height:${h}px;"></div>
+      <div class="bar-label">${m.label}</div>
     </div>`;
   }).join('');
 }
 
-/* ── ENROLMENT ── */
-async function loadEnrolment(){
-  const now=new Date();
-  const monthStr=`${now.getFullYear()}-${padZ(now.getMonth()+1)}`;
+function renderPendingQuick(){
+  const pending=contractors.filter(c=>c.status==='pending');
+  const tbody=document.getElementById('pending-tbody');
+  if(!pending.length){
+    tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--ink3);">✅ No pending activations</td></tr>';
+    return;
+  }
+  tbody.innerHTML=pending.map(c=>`
+    <tr>
+      <td><b>${c.firmName||c.displayName||'—'}</b></td>
+      <td style="color:var(--ink3)">${c.email||'—'}</td>
+      <td style="color:var(--ink3)">${fmtDate(c.createdAt)}</td>
+      <td>
+        <button class="btn btn-activate btn-sm" onclick="quickActivate('${c.id}','${(c.firmName||c.displayName||'').replace(/'/g,"\\'")}')">
+          ✓ Activate
+        </button>
+      </td>
+    </tr>`).join('');
+}
+
+function renderContractorsTable(){
+  const search=document.getElementById('search-input')?.value.toLowerCase()||'';
+  let list=contractors;
+  if(currentFilter!=='all') list=list.filter(c=>c.status===currentFilter);
+  if(search) list=list.filter(c=>(c.firmName||'').toLowerCase().includes(search)||(c.email||'').toLowerCase().includes(search)||(c.location||'').toLowerCase().includes(search));
+  const tbody=document.getElementById('contractors-tbody');
+  if(!list.length){
+    tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--ink3);">No contractors found.</td></tr>';
+    return;
+  }
+  tbody.innerHTML=list.map((c,i)=>{
+    const statusBadge={
+      active:'<span class="badge badge-active">Active</span>',
+      pending:'<span class="badge badge-pending">Pending</span>',
+      expired:'<span class="badge badge-expired">Expired</span>'
+    }[c.status]||'<span class="badge badge-pending">Pending</span>';
+    const session=(c.contractStart||'—')+(c.contractEnd?' → '+c.contractEnd:'');
+    const actions=c.status==='pending'
+      ?`<button class="btn btn-activate btn-sm" onclick="quickActivate('${c.id}','${(c.firmName||'').replace(/'/g,"\\'")}')">✓ Activate</button>`
+      :c.status==='active'
+      ?`<button class="btn btn-expire btn-sm" onclick="setExpired('${c.id}')">Expire</button>`
+      :'<span style="color:var(--ink3);font-size:11px;">—</span>';
+    return `<tr>
+      <td style="color:var(--ink3)">${i+1}</td>
+      <td>
+        <div style="font-weight:600;">${c.firmName||c.displayName||'—'}</div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:2px;">${c.location||'—'}</div>
+      </td>
+      <td style="color:var(--ink3);font-size:12px;">${c.email||'—'}</td>
+      <td style="color:var(--ink3)">${c.location||'—'}</td>
+      <td style="text-align:center;"><b>${c.schoolCount||0}</b></td>
+      <td>${statusBadge}</td>
+      <td style="font-size:11px;color:var(--ink3);">${session}</td>
+      <td style="font-size:11px;color:var(--ink3);">${fmtDate(c.createdAt)}</td>
+      <td style="white-space:nowrap;display:flex;gap:6px;">
+        ${actions}
+        <button class="btn btn-outline btn-sm" onclick='openDetail(${JSON.stringify(c)})'>👁️</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderRevenuePanel(){
+  updateStats();
+}
+
+function renderPaymentLog(){
+  const wrap=document.getElementById('pay-log-wrap');
+  if(!payments.length){
+    wrap.innerHTML='<div class="empty"><div class="empty-icon">💳</div><div class="empty-txt">No payments recorded yet.</div></div>';
+    return;
+  }
+  wrap.innerHTML=payments.map(p=>{
+    const c=contractors.find(x=>x.id===p.contractorId);
+    return `<div class="pay-log-row">
+      <div>
+        <div class="pay-name">${c?.firmName||c?.displayName||p.contractorId||'—'}</div>
+        <div class="pay-date">${p.date||'—'} · ${p.mode||'UPI'}${p.note?' · '+p.note:''}</div>
+      </div>
+      <div class="pay-amt">+₹${(+p.amount||0).toLocaleString('en-IN')}</div>
+    </div>`;
+  }).join('');
+}
+
+function populateContractorSelect(){
+  const sel=document.getElementById('pay-contractor');
+  sel.innerHTML='<option value="">— Select Contractor —</option>'+
+    contractors.map(c=>`<option value="${c.id}">${c.firmName||c.displayName||c.email}</option>`).join('');
+}
+
+function updatePendingBadge(){
+  const n=contractors.filter(c=>c.status==='pending').length;
+  const badge=document.getElementById('pending-badge');
+  badge.textContent=n;
+  badge.style.display=n>0?'inline-block':'none';
+}
+
+/* ═══════════════════════════════
+   ACTIONS
+═══════════════════════════════ */
+async function quickActivate(uid, name){
+  if(!confirm(`Activate "${name}"?\n\nThis will give them full access to the MDM Billing Portal.`))return;
   try{
-    const snap=await db.doc('contractors/'+contractorId+'/enrolment/'+schoolId+'-'+monthStr).get();
+    await db.doc('contractors/'+uid).update({status:'active', activatedAt:new Date().toISOString()});
+    const c=contractors.find(x=>x.id===uid);
+    if(c){c.status='active'; c.activatedAt=new Date().toISOString();}
+    renderAll();
+    alert('✅ '+name+' has been activated successfully!');
+  }catch(e){alert('Error: '+e.message);}
+}
+
+async function setExpired(uid){
+  if(!confirm('Mark this contractor as expired?\n\nThey will lose access to the dashboard.'))return;
+  try{
+    await db.doc('contractors/'+uid).update({status:'expired'});
+    const c=contractors.find(x=>x.id===uid);
+    if(c) c.status='expired';
+    renderAll();
+  }catch(e){alert('Error: '+e.message);}
+}
+
+async function recordPayment(){
+  const contractorId=document.getElementById('pay-contractor').value;
+  const amount=document.getElementById('pay-amount').value;
+  const date=document.getElementById('pay-date').value;
+  const mode=document.getElementById('pay-mode').value;
+  const note=document.getElementById('pay-note').value;
+  if(!contractorId){showAlert('pay-form-alert','err','Please select a contractor.');return;}
+  if(!amount||+amount<=0){showAlert('pay-form-alert','err','Please enter a valid amount.');return;}
+  if(!date){showAlert('pay-form-alert','err','Please select payment date.');return;}
+  try{
+    // Save payment
+    await db.collection('admin/payments/log').add({
+      contractorId, amount:+amount, date, mode, note,
+      recordedAt:new Date().toISOString()
+    });
+    // Activate contractor
+    await db.doc('contractors/'+contractorId).update({
+      status:'active', activatedAt:new Date().toISOString()
+    });
+    const c=contractors.find(x=>x.id===contractorId);
+    if(c){c.status='active';}
+    await loadAll();
+    showAlert('pay-form-alert','ok','✅ Payment recorded and contractor activated!');
+    document.getElementById('pay-contractor').value='';
+    document.getElementById('pay-note').value='';
+  }catch(e){showAlert('pay-form-alert','err','Error: '+e.message);}
+}
+
+/* ═══════════════════════════════
+   DETAIL MODAL
+═══════════════════════════════ */
+function openDetail(c){
+  document.getElementById('modal-firm-name').textContent=c.firmName||c.displayName||'Contractor';
+  document.getElementById('modal-alert').innerHTML='';
+  const svc=c.services||{};
+  const svcList=Object.entries(svc).filter(([k,v])=>v).map(([k])=>({
+    centralPP:'Central PP+P',centralUP:'Central UP',utShare:'UT Share',
+    egg:'Boiled Egg',banana:'Ripened Banana',cookum:'Cookum Helper',transport:'Rice Transport'
+  }[k]||k)).join(', ')||'Not configured';
+  document.getElementById('modal-details').innerHTML=[
+    ['Status',`<span class="badge badge-${c.status||'pending'}">${c.status||'pending'}</span>`],
+    ['Email',c.email||'—'],
+    ['Firm',c.firmName||'—'],
+    ['Location',c.location||'—'],
+    ['Cell',c.cell||'—'],
+    ['Supply Order',c.orderNo||'—'],
+    ['Order Date',c.orderDate||'—'],
+    ['Contract',((c.contractStart||'—')+' → '+(c.contractEnd||'—'))],
+    ['Schools',c.schoolCount||0],
+    ['Services',svcList],
+    ['Joined',fmtDate(c.createdAt)],
+    ['Activated',fmtDate(c.activatedAt)]
+  ].map(([l,v])=>`<div class="detail-row"><div class="detail-label">${l}</div><div class="detail-val">${v}</div></div>`).join('');
+  const acts=[];
+  if(c.status==='pending') acts.push(`<button class="btn btn-activate" onclick="quickActivate('${c.id}','${(c.firmName||'').replace(/'/g,"\\'")}');closeModal();">✓ Activate Now</button>`);
+  if(c.status==='active') acts.push(`<button class="btn btn-expire" onclick="setExpired('${c.id}');closeModal();">Mark Expired</button>`);
+  if(c.status==='expired') acts.push(`<button class="btn btn-activate" onclick="quickActivate('${c.id}','${(c.firmName||'').replace(/'/g,"\\'")}');closeModal();">Re-activate</button>`);
+  document.getElementById('modal-actions').innerHTML=acts.join('');
+  document.getElementById('detail-modal').classList.remove('hidden');
+}
+function closeModal(){document.getElementById('detail-modal').classList.add('hidden');}
+
+/* ═══════════════════════════════
+   SETTINGS
+═══════════════════════════════ */
+async function loadSettings(){
+  try{
+    const snap=await db.doc('admin/settings').get();
     if(snap.exists){
       const d=snap.data();
-      document.getElementById('enroll-boys').value=d.boys||0;
-      document.getElementById('enroll-girls').value=d.girls||0;
-      updateEnrolTotal();
+      document.getElementById('set-upi').value=d.upiId||'';
+      document.getElementById('set-wa').value=d.whatsapp||'';
+      document.getElementById('set-fee').value=d.sessionFee||2499;
+      document.getElementById('set-admin-email').value=d.adminEmail||'';
     }
   }catch(e){}
 }
 
-function updateEnrolTotal(){
-  const b=parseInt(document.getElementById('enroll-boys').value)||0;
-  const g=parseInt(document.getElementById('enroll-girls').value)||0;
-  document.getElementById('enroll-total').textContent=b+g;
-}
-document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('enroll-boys')?.addEventListener('input',updateEnrolTotal);
-  document.getElementById('enroll-girls')?.addEventListener('input',updateEnrolTotal);
-});
-
-async function saveEnrolment(){
-  const now=new Date();
-  const monthStr=`${now.getFullYear()}-${padZ(now.getMonth()+1)}`;
-  const boys=parseInt(document.getElementById('enroll-boys').value)||0;
-  const girls=parseInt(document.getElementById('enroll-girls').value)||0;
-  showAlert('enroll-alert','','');
+async function saveSettings(){
+  const data={
+    upiId:document.getElementById('set-upi').value.trim(),
+    whatsapp:document.getElementById('set-wa').value.trim(),
+    sessionFee:+document.getElementById('set-fee').value,
+    adminEmail:document.getElementById('set-admin-email').value.trim().toLowerCase()
+  };
   try{
-    await db.doc('contractors/'+contractorId+'/enrolment/'+schoolId+'-'+monthStr).set({
-      schoolId, month:monthStr, boys, girls, total:boys+girls,
-      updatedAt:new Date().toISOString()
-    });
-    showAlert('enroll-alert','ok','✓ Enrolment saved!');
-  }catch(e){
-    showAlert('enroll-alert','err','Error: '+e.message);
-  }
+    await db.doc('admin/settings').set(data,{merge:true});
+    showAlert('settings-alert','ok','✅ Settings saved!');
+  }catch(e){showAlert('settings-alert','err','Error: '+e.message);}
 }
 
-/* ═══════════════════════════
+/* ═══════════════════════════════
    HELPERS
-═══════════════════════════ */
-function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');}
+═══════════════════════════════ */
+function show(id){
+  document.getElementById('v-login').style.display='none';
+  document.getElementById('v-admin').style.display='none';
+  document.getElementById(id).style.display='flex';
+  if(id==='v-login') document.getElementById('v-login').style.display='flex';
+  if(id==='v-admin') document.getElementById('v-admin').style.display='flex';
+}
 function hideLoader(){document.getElementById('loader').classList.add('hidden');}
-function showErr(msg){document.getElementById('pin-school-sub').textContent=msg; showView('v-pin');}
-function padZ(n){return String(n).padStart(2,'0');}
-function todayStr(){const d=new Date();return `${d.getFullYear()}-${padZ(d.getMonth()+1)}-${padZ(d.getDate())}`;}
-function lockOut(){pinEntry='';updatePinDots();showView('v-pin');}
-function showTab(name){
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  event.currentTarget.classList.add('active');
+function fmtDate(s){
+  if(!s)return'—';
+  try{const d=new Date(s);return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}
+  catch(e){return s.substring(0,10);}
 }
 function showAlert(id,type,msg){
   const el=document.getElementById(id);if(!el)return;
-  if(!msg){el.innerHTML='';return;}
   el.innerHTML=`<div class="alert alert-${type}">${msg}</div>`;
-  if(type==='ok')setTimeout(()=>el.innerHTML='',3000);
+  if(type==='ok') setTimeout(()=>el.innerHTML='',3000);
 }
+function showPanel(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  document.getElementById('nav-'+name)?.classList.add('active');
+  document.getElementById('topbar-title').textContent={
+    overview:'Dashboard',contractors:'Contractors',
+    revenue:'Revenue',payments:'Payment Log',settings:'Settings'
+  }[name]||name;
+  if(name==='contractors') renderContractorsTable();
+}
+function setFilter(f,el){
+  currentFilter=f;
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderContractorsTable();
+}
+function filterContractors(f){
+  currentFilter=f;
+  document.querySelectorAll('.ftab').forEach((t,i)=>{
+    t.classList.toggle('active',[{v:'all'},{v:'pending'},{v:'active'},{v:'expired'}][i]?.v===f);
+  });
+  renderContractorsTable();
+}
+function filterTable(){renderContractorsTable();}
+
+// Set today's date as default for payment
+window.addEventListener('DOMContentLoaded',()=>{
+  const today=new Date().toISOString().split('T')[0];
+  const payDate=document.getElementById('pay-date');
+  if(payDate) payDate.value=today;
+});
 </script>
 </body>
 </html>
