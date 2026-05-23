@@ -23,7 +23,7 @@
   --r:14px;--rs:9px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
+html,body{height:100%;margin:0;padding:0;overflow:hidden;}body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);}
 input,select,textarea,button{font-family:'Outfit',sans-serif;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
@@ -86,7 +86,7 @@ input,select,textarea,button{font-family:'Outfit',sans-serif;}
 .wa-btn{display:inline-flex;align-items:center;gap:8px;background:#25d366;color:#fff;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;}
 
 /* ── ONBOARDING ── */
-#v-onboard{min-height:100vh;background:var(--paper);padding:28px 20px;}
+#v-onboard{height:100vh;overflow-y:auto;background:var(--paper);padding:28px 20px;}
 .onboard-wrap{max-width:600px;margin:0 auto;}
 .step-bar{display:flex;gap:6px;margin-bottom:24px;}
 .step-seg{flex:1;height:4px;border-radius:4px;background:var(--border);}
@@ -94,7 +94,7 @@ input,select,textarea,button{font-family:'Outfit',sans-serif;}
 .step-seg.active{background:var(--saffron2);}
 
 /* ── ADMIN SHELL ── */
-#v-admin{display:flex;min-height:100vh;}
+#v-admin{display:flex;height:100vh;overflow:hidden;}
 .sidebar{width:220px;flex-shrink:0;background:var(--ink);display:flex;flex-direction:column;padding:0;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .25s;}
 .sidebar-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.06);}
 .sidebar-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--saffron),var(--saffron2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:8px;}
@@ -111,7 +111,7 @@ input,select,textarea,button{font-family:'Outfit',sans-serif;}
 .user-name{color:rgba(255,255,255,.7);font-size:12px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .sign-out-btn{background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:16px;transition:color .15s;}
 .sign-out-btn:hover{color:rgba(255,255,255,.8);}
-.admin-main{margin-left:220px;flex:1;min-height:100vh;background:var(--paper);}
+.admin-main{margin-left:220px;flex:1;height:100vh;overflow-y:auto;background:var(--paper);}
 .admin-topbar{background:#fff;border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
 .topbar-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);}
 .topbar-right{display:flex;align-items:center;gap:10px;}
@@ -256,22 +256,7 @@ table.data-table tr:hover td{background:var(--paper);}
   </div>
 </div>
 
-<!-- ══ VIEW: FIREBASE SETUP ══ -->
-<div id="v-setup" class="view">
-  <div class="setup-card fade-up">
-    <div style="font-size:36px;margin-bottom:12px;">🔥</div>
-    <h2>Connect Firebase</h2>
-    <p>Paste your Firebase project config below. This is stored only on this device.</p>
-    <div id="setup-err"></div>
-    <div class="field"><div class="lbl">API Key *</div><input id="fb-apikey" type="text" placeholder="AIzaSy…"/></div>
-    <div class="field"><div class="lbl">Auth Domain *</div><input id="fb-auth" type="text" placeholder="project.firebaseapp.com"/></div>
-    <div class="field"><div class="lbl">Project ID *</div><input id="fb-proj" type="text" placeholder="my-mdm-app"/></div>
-    <div class="field"><div class="lbl">App ID</div><input id="fb-appid" type="text" placeholder="1:123:web:abc"/></div>
-    <div style="margin-top:4px;">
-      <div class="alert alert-info" style="margin-bottom:12px;">Enable <b>Firestore Database</b> and <b>Google Authentication</b> in Firebase Console before connecting.</div>
-      <button class="btn btn-ink btn-full" onclick="doSetup()">🚀 Connect &amp; Continue</button>
-    </div>
-  </div>
+<!-- v-setup removed -->
 </div>
 
 <!-- ══ VIEW: GOOGLE LOGIN ══ -->
@@ -617,6 +602,16 @@ table.data-table tr:hover td{background:var(--paper);}
 
 <script>
 /* ═══════════════════════════════
+   FIREBASE CONFIG
+═══════════════════════════════ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAvI7f2ilz4eGpY8_U7rzk56vTXgmbxxOM",
+  authDomain: "mdm-billing-26.firebaseapp.com",
+  projectId: "mdm-billing-26",
+  appId: "1:1077975540746:web:cc35a43e52ceb601eb6bf3"
+};
+
+/* ═══════════════════════════════
    STATE
 ═══════════════════════════════ */
 let db=null, auth=null;
@@ -634,17 +629,11 @@ window.addEventListener('DOMContentLoaded',()=>{
   // Check for school route
   const sp=new URLSearchParams(location.search);
   if(sp.get('school')){
+    // redirect to school.html
     location.href='/school'+location.search;
     return;
   }
-  // Firebase config hardcoded — no localStorage needed
-  const cfg={
-    apiKey:"AIzaSyAvI7f2iIz4eGpY8_U7rzk56vTXgmbxxOM",
-    authDomain:"mdm-billing-26.firebaseapp.com",
-    projectId:"mdm-billing-26",
-    appId:"1:1077975540746:web:cc35a43e52ceb601eb6bf3"
-  };
-  initFirebase(cfg);
+  initFirebase(FIREBASE_CONFIG);
 });
 
 function initFirebase(cfg){
@@ -654,7 +643,7 @@ function initFirebase(cfg){
     auth=firebase.auth();
     auth.onAuthStateChanged(onAuthChange);
   }catch(e){
-    alert('Firebase connection failed: '+e.message);
+    alert('Firebase init failed: '+e.message);
     hideLoader();
   }
 }
@@ -723,23 +712,6 @@ function todayStr(){const d=new Date();return `${d.getFullYear()}-${padZ(d.getMo
 function fmtDate(s){if(!s)return'';const[y,m,d]=s.split('-');return`${d}.${m}.${y}`;}
 
 /* ═══════════════════════════════
-   FIREBASE SETUP
-═══════════════════════════════ */
-function doSetup(){
-  const cfg={
-    apiKey:document.getElementById('fb-apikey').value.trim(),
-    authDomain:document.getElementById('fb-auth').value.trim(),
-    projectId:document.getElementById('fb-proj').value.trim(),
-    appId:document.getElementById('fb-appid').value.trim()
-  };
-  if(!cfg.apiKey||!cfg.authDomain||!cfg.projectId){
-    showErr('setup-err','API Key, Auth Domain and Project ID are required.');return;
-  }
-  localStorage.setItem('mdm_fb',JSON.stringify(cfg));
-  showLoader();
-  initFirebase(cfg);
-}
-
 /* ═══════════════════════════════
    AUTH
 ═══════════════════════════════ */
