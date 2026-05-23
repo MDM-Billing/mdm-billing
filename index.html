@@ -44,35 +44,28 @@ input,select,textarea,button{font-family:'Outfit',sans-serif;}
 .loader-text{color:rgba(255,255,255,.5);font-size:13px;}
 
 /* ── LANDING ── */
-#v-landing{min-height:100vh;background:linear-gradient(160deg,#0f1624 0%,#1a2744 55%,#0d3d3d 100%);display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden;}
+#v-landing{height:100vh;overflow:hidden;background:linear-gradient(160deg,#0f1624 0%,#1a2744 55%,#0d3d3d 100%);display:flex;align-items:center;justify-content:center;padding:24px;position:relative;}
 #v-landing::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 20% 50%,rgba(200,96,10,.06) 0%,transparent 60%),radial-gradient(circle at 80% 20%,rgba(13,110,110,.08) 0%,transparent 50%);}
-.landing-card{background:rgba(255,255,255,.04);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:44px 32px;width:100%;max-width:400px;text-align:center;position:relative;z-index:1;}
-.landing-icon{width:76px;height:76px;background:linear-gradient(135deg,var(--saffron),var(--saffron2));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 22px;box-shadow:0 12px 40px rgba(200,96,10,.3);}
+.landing-card{position:relative;z-index:1;width:100%;max-width:360px;text-align:center;}
+.landing-icon{width:72px;height:72px;background:linear-gradient(135deg,var(--saffron),var(--saffron2));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 20px;box-shadow:0 12px 40px rgba(200,96,10,.3);}
 .landing-card h1{font-family:'Playfair Display',serif;color:#fff;font-size:26px;font-weight:800;margin-bottom:6px;line-height:1.2;}
 .landing-card p{color:rgba(255,255,255,.4);font-size:13px;margin-bottom:32px;line-height:1.6;}
-.role-btn{width:100%;padding:18px 20px;border-radius:16px;border:none;cursor:pointer;display:flex;align-items:center;gap:14px;margin-bottom:10px;transition:transform .15s,box-shadow .15s;text-align:left;}
+.role-btn{width:100%;padding:18px 20px;border-radius:16px;border:none;cursor:pointer;display:flex;align-items:center;gap:14px;margin-bottom:10px;transition:transform .15s,box-shadow .15s;text-align:left;background:#fff;box-shadow:0 8px 32px rgba(0,0,0,.25);}
 .role-btn:hover{transform:translateY(-2px);}
-.role-btn.admin{background:#fff;box-shadow:0 8px 32px rgba(0,0,0,.2);}
-.role-btn.school{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);}
-.role-icon{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
-.role-btn.admin .role-icon{background:linear-gradient(135deg,#1a2744,#2d4a8a);}
-.role-btn.school .role-icon{background:rgba(255,255,255,.1);}
-.role-title{font-weight:700;font-size:15px;}
-.role-btn.admin .role-title{color:#1a2744;}
-.role-btn.school .role-title{color:#fff;}
-.role-sub{font-size:12px;margin-top:2px;}
-.role-btn.admin .role-sub{color:#6b7394;}
-.role-btn.school .role-sub{color:rgba(255,255,255,.4);}
-.role-arrow{margin-left:auto;font-size:20px;opacity:.25;}
+.role-btn.school{display:none;}
+.role-icon{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:linear-gradient(135deg,#1a2744,#2d4a8a);}
+.role-title{font-weight:700;font-size:16px;color:#1a2744;}
+.role-sub{font-size:12px;margin-top:2px;color:#6b7394;}
+.role-arrow{margin-left:auto;font-size:20px;color:#cbd5e1;}
 
 /* ── SETUP (Firebase config) ── */
-#v-setup{min-height:100vh;background:linear-gradient(135deg,#0f1624,#1a2744);display:flex;align-items:center;justify-content:center;padding:20px;}
+#v-setup{height:100vh;overflow:hidden;background:linear-gradient(135deg,#0f1624,#1a2744);display:flex;align-items:center;justify-content:center;padding:20px;}
 .setup-card{background:#fff;border-radius:20px;padding:28px;width:100%;max-width:420px;}
 .setup-card h2{font-family:'Playfair Display',serif;color:var(--ink);font-size:20px;margin-bottom:6px;}
 .setup-card p{color:var(--ink3);font-size:13px;margin-bottom:18px;line-height:1.6;}
 
 /* ── GOOGLE LOGIN ── */
-#v-login{min-height:100vh;background:linear-gradient(160deg,#0f1624,#1a2744);display:flex;align-items:center;justify-content:center;padding:20px;}
+#v-login{height:100vh;overflow:hidden;background:linear-gradient(160deg,#0f1624,#1a2744);display:flex;align-items:center;justify-content:center;padding:20px;}
 .login-card{background:#fff;border-radius:20px;padding:32px 28px;width:100%;max-width:340px;text-align:center;}
 .login-card .icon{font-size:44px;margin-bottom:14px;}
 .login-card h2{font-family:'Playfair Display',serif;color:var(--ink);font-size:20px;font-weight:700;margin-bottom:6px;}
@@ -81,7 +74,7 @@ input,select,textarea,button{font-family:'Outfit',sans-serif;}
 .google-btn:hover{box-shadow:0 4px 16px rgba(0,0,0,.1);}
 
 /* ── PENDING ACTIVATION ── */
-#v-pending{min-height:100vh;background:var(--paper);display:flex;align-items:center;justify-content:center;padding:20px;}
+#v-pending{height:100vh;overflow:hidden;background:var(--paper);display:flex;align-items:center;justify-content:center;padding:20px;}
 .pending-card{background:#fff;border-radius:20px;padding:32px 24px;width:100%;max-width:420px;text-align:center;box-shadow:var(--shadow-lg);}
 .pending-icon{font-size:52px;margin-bottom:16px;}
 .pending-card h2{font-family:'Playfair Display',serif;color:var(--ink);font-size:22px;margin-bottom:8px;}
@@ -255,19 +248,11 @@ table.data-table tr:hover td{background:var(--paper);}
       <div class="role-icon">👨‍💼</div>
       <div>
         <div class="role-title">Contractor Login</div>
-        <div class="role-sub">Admin Dashboard — Full Access</div>
+        <div class="role-sub">Sign in with Google to continue</div>
       </div>
       <div class="role-arrow">›</div>
     </button>
-    <button class="role-btn school" onclick="goSchool()">
-      <div class="role-icon">🏫</div>
-      <div>
-        <div class="role-title">School Entry</div>
-        <div class="role-sub">Submit daily attendance with PIN</div>
-      </div>
-      <div class="role-arrow" style="color:rgba(255,255,255,.25)">›</div>
-    </button>
-    <div style="color:rgba(255,255,255,.2);font-size:11px;margin-top:14px;">MDM Billing Portal · A&N Islands</div>
+    <div style="color:rgba(255,255,255,.18);font-size:11px;margin-top:18px;">MDM Billing Portal · A&amp;N Islands</div>
   </div>
 </div>
 
@@ -650,7 +635,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   const sp=new URLSearchParams(location.search);
   if(sp.get('school')){
     // redirect to school.html
-    location.href='school.html'+location.search;
+    location.href='/school'+location.search;
     return;
   }
   const saved=localStorage.getItem('mdm_fb');
@@ -977,7 +962,7 @@ function renderSchools(){
     wrap.innerHTML=`<div class="card"><div style="text-align:center;padding:32px;color:var(--ink3);">No schools yet. Add your first school above.</div></div>`;
     return;
   }
-  const baseUrl=location.origin+location.pathname.replace('index.html','')+'school.html';
+  const baseUrl=location.origin+'/school';
   wrap.innerHTML=`<div class="card" style="padding:0;overflow:hidden;">
     <div style="padding:14px 18px;border-bottom:1px solid var(--paper2);font-weight:700;font-size:14px;">${schools.length} School${schools.length>1?'s':''}</div>
     <div class="tbl-wrap">
@@ -1260,7 +1245,7 @@ function genPin(targetId){
   document.getElementById(targetId).value=p;
 }
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
-function goSchool(){window.open('school.html','_blank');}
+function goSchool(){window.open('/school','_blank');}
 
 /* ═══════════════════════════════
    BILL PRINT ENGINE
