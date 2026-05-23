@@ -24,7 +24,7 @@
   --r:14px;--rs:9px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
+html,body{height:100%;margin:0;padding:0;overflow:hidden;}body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
@@ -37,7 +37,7 @@ body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);mi
 .loader-txt{color:rgba(255,255,255,.4);font-size:13px;}
 
 /* ── LOGIN ── */
-#v-login{min-height:100vh;background:linear-gradient(160deg,#0f1420 0%,#1a2035 60%,#0d2020 100%);display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden;}
+#v-login{height:100vh;overflow:hidden;background:linear-gradient(160deg,#0f1420 0%,#1a2035 60%,#0d2020 100%);display:flex;align-items:center;justify-content:center;padding:20px;position:relative;}
 #v-login::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,rgba(184,134,11,.06),transparent 60%),radial-gradient(circle at 75% 25%,rgba(13,110,110,.06),transparent 50%);}
 .login-card{background:rgba(255,255,255,.04);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:44px 36px;width:100%;max-width:380px;text-align:center;position:relative;z-index:1;}
 .login-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(184,134,11,.15);border:1px solid rgba(184,134,11,.3);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--gold2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:20px;}
@@ -50,10 +50,10 @@ body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);mi
 .login-note{color:rgba(255,255,255,.2);font-size:11px;margin-top:16px;}
 
 /* ── SHELL ── */
-#v-admin{display:flex;min-height:100vh;}
+#v-admin{display:flex;height:100vh;overflow:hidden;}
 
 /* SIDEBAR */
-.sidebar{width:230px;flex-shrink:0;background:var(--ink);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:50;}
+.sidebar{width:230px;flex-shrink:0;background:var(--ink);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:50;height:100vh;}
 .sb-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.05);}
 .sb-logo-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(184,134,11,.15);border:1px solid rgba(184,134,11,.25);border-radius:8px;padding:4px 10px;font-size:10px;font-weight:700;color:var(--gold2);letter-spacing:.5px;margin-bottom:10px;}
 .sb-logo-name{font-family:'Playfair Display',serif;color:#fff;font-size:16px;font-weight:700;line-height:1.2;}
@@ -73,7 +73,7 @@ body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);mi
 .sb-signout:hover{color:rgba(255,255,255,.7);}
 
 /* MAIN */
-.main{margin-left:230px;flex:1;min-height:100vh;}
+.main{margin-left:230px;flex:1;height:100vh;overflow-y:auto;background:var(--paper);}
 .topbar{background:#fff;border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
 .topbar-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);}
 .topbar-right{display:flex;align-items:center;gap:10px;}
@@ -502,7 +502,7 @@ tr:hover td{background:#fafaf8;}
    (same as the one from your index.html)
 ═══════════════════════════════ */
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyAvI7f2iIz4eGpY8_U7rzk56vTXgmbxxOM",
+  apiKey: "AIzaSyAvI7f2ilz4eGpY8_U7rzk56vTXgmbxxOM",
   authDomain: "mdm-billing-26.firebaseapp.com",
   projectId: "mdm-billing-26",
   appId: "1:1077975540746:web:cc35a43e52ceb601eb6bf3"
