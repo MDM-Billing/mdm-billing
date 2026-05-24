@@ -23,7 +23,7 @@
   --r:14px;--rs:9px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;margin:0;padding:0;}body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);overflow:hidden;}body.scroll-allowed{overflow:auto;}
+body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
 input,select,textarea,button{font-family:'Outfit',sans-serif;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
@@ -34,13 +34,8 @@ input,select,textarea,button{font-family:'Outfit',sans-serif;}
 .fade-in{animation:fadeIn .2s ease forwards;}
 
 /* ── VIEWS ── */
-.view{display:none !important;}
-.view.active{display:block !important;}
-.view.active#v-admin{display:flex !important;}
-.view.active#v-landing,
-.view.active#v-login,
-.view.active#v-pending,
-.view.active#v-setup{display:flex !important;}
+.view{display:none;}
+.view.active{display:block;}
 
 /* ── LOADER ── */
 #loader{position:fixed;inset:0;background:var(--ink);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:16px;}
@@ -49,28 +44,35 @@ input,select,textarea,button{font-family:'Outfit',sans-serif;}
 .loader-text{color:rgba(255,255,255,.5);font-size:13px;}
 
 /* ── LANDING ── */
-#v-landing{height:100vh;overflow:hidden;background:linear-gradient(160deg,#0f1624 0%,#1a2744 55%,#0d3d3d 100%);align-items:center;justify-content:center;padding:24px;position:relative;}
+#v-landing{min-height:100vh;background:linear-gradient(160deg,#0f1624 0%,#1a2744 55%,#0d3d3d 100%);display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden;}
 #v-landing::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 20% 50%,rgba(200,96,10,.06) 0%,transparent 60%),radial-gradient(circle at 80% 20%,rgba(13,110,110,.08) 0%,transparent 50%);}
-.landing-card{position:relative;z-index:1;width:100%;max-width:360px;text-align:center;}
-.landing-icon{width:72px;height:72px;background:linear-gradient(135deg,var(--saffron),var(--saffron2));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 20px;box-shadow:0 12px 40px rgba(200,96,10,.3);}
+.landing-card{background:rgba(255,255,255,.04);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:44px 32px;width:100%;max-width:400px;text-align:center;position:relative;z-index:1;}
+.landing-icon{width:76px;height:76px;background:linear-gradient(135deg,var(--saffron),var(--saffron2));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 22px;box-shadow:0 12px 40px rgba(200,96,10,.3);}
 .landing-card h1{font-family:'Playfair Display',serif;color:#fff;font-size:26px;font-weight:800;margin-bottom:6px;line-height:1.2;}
 .landing-card p{color:rgba(255,255,255,.4);font-size:13px;margin-bottom:32px;line-height:1.6;}
-.role-btn{width:100%;padding:18px 20px;border-radius:16px;border:none;cursor:pointer;display:flex;align-items:center;gap:14px;margin-bottom:10px;transition:transform .15s,box-shadow .15s;text-align:left;background:#fff;box-shadow:0 8px 32px rgba(0,0,0,.25);}
+.role-btn{width:100%;padding:18px 20px;border-radius:16px;border:none;cursor:pointer;display:flex;align-items:center;gap:14px;margin-bottom:10px;transition:transform .15s,box-shadow .15s;text-align:left;}
 .role-btn:hover{transform:translateY(-2px);}
-.role-btn.school{display:none;}
-.role-icon{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:linear-gradient(135deg,#1a2744,#2d4a8a);}
-.role-title{font-weight:700;font-size:16px;color:#1a2744;}
-.role-sub{font-size:12px;margin-top:2px;color:#6b7394;}
-.role-arrow{margin-left:auto;font-size:20px;color:#cbd5e1;}
+.role-btn.admin{background:#fff;box-shadow:0 8px 32px rgba(0,0,0,.2);}
+.role-btn.school{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);}
+.role-icon{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.role-btn.admin .role-icon{background:linear-gradient(135deg,#1a2744,#2d4a8a);}
+.role-btn.school .role-icon{background:rgba(255,255,255,.1);}
+.role-title{font-weight:700;font-size:15px;}
+.role-btn.admin .role-title{color:#1a2744;}
+.role-btn.school .role-title{color:#fff;}
+.role-sub{font-size:12px;margin-top:2px;}
+.role-btn.admin .role-sub{color:#6b7394;}
+.role-btn.school .role-sub{color:rgba(255,255,255,.4);}
+.role-arrow{margin-left:auto;font-size:20px;opacity:.25;}
 
 /* ── SETUP (Firebase config) ── */
-#v-setup{height:100vh;overflow:hidden;background:linear-gradient(135deg,#0f1624,#1a2744);align-items:center;justify-content:center;padding:20px;}
+#v-setup{min-height:100vh;background:linear-gradient(135deg,#0f1624,#1a2744);display:flex;align-items:center;justify-content:center;padding:20px;}
 .setup-card{background:#fff;border-radius:20px;padding:28px;width:100%;max-width:420px;}
 .setup-card h2{font-family:'Playfair Display',serif;color:var(--ink);font-size:20px;margin-bottom:6px;}
 .setup-card p{color:var(--ink3);font-size:13px;margin-bottom:18px;line-height:1.6;}
 
 /* ── GOOGLE LOGIN ── */
-#v-login{height:100vh;overflow:hidden;background:linear-gradient(160deg,#0f1624,#1a2744);align-items:center;justify-content:center;padding:20px;}
+#v-login{min-height:100vh;background:linear-gradient(160deg,#0f1624,#1a2744);display:flex;align-items:center;justify-content:center;padding:20px;}
 .login-card{background:#fff;border-radius:20px;padding:32px 28px;width:100%;max-width:340px;text-align:center;}
 .login-card .icon{font-size:44px;margin-bottom:14px;}
 .login-card h2{font-family:'Playfair Display',serif;color:var(--ink);font-size:20px;font-weight:700;margin-bottom:6px;}
@@ -79,7 +81,7 @@ input,select,textarea,button{font-family:'Outfit',sans-serif;}
 .google-btn:hover{box-shadow:0 4px 16px rgba(0,0,0,.1);}
 
 /* ── PENDING ACTIVATION ── */
-#v-pending{height:100vh;overflow:hidden;background:var(--paper);align-items:center;justify-content:center;padding:20px;}
+#v-pending{min-height:100vh;background:var(--paper);display:flex;align-items:center;justify-content:center;padding:20px;}
 .pending-card{background:#fff;border-radius:20px;padding:32px 24px;width:100%;max-width:420px;text-align:center;box-shadow:var(--shadow-lg);}
 .pending-icon{font-size:52px;margin-bottom:16px;}
 .pending-card h2{font-family:'Playfair Display',serif;color:var(--ink);font-size:22px;margin-bottom:8px;}
@@ -91,15 +93,15 @@ input,select,textarea,button{font-family:'Outfit',sans-serif;}
 .wa-btn{display:inline-flex;align-items:center;gap:8px;background:#25d366;color:#fff;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;}
 
 /* ── ONBOARDING ── */
-#v-onboard{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;background:var(--paper);padding:28px 20px 120px;-webkit-overflow-scrolling:touch;}
-.onboard-wrap{max-width:600px;margin:0 auto;padding-bottom:40px;}
+#v-onboard{min-height:100vh;background:var(--paper);padding:28px 20px;}
+.onboard-wrap{max-width:600px;margin:0 auto;}
 .step-bar{display:flex;gap:6px;margin-bottom:24px;}
 .step-seg{flex:1;height:4px;border-radius:4px;background:var(--border);}
 .step-seg.done{background:var(--saffron);}
 .step-seg.active{background:var(--saffron2);}
 
 /* ── ADMIN SHELL ── */
-#v-admin{height:100vh;overflow:hidden;}
+#v-admin{display:flex;min-height:100vh;}
 .sidebar{width:220px;flex-shrink:0;background:var(--ink);display:flex;flex-direction:column;padding:0;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .25s;}
 .sidebar-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.06);}
 .sidebar-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--saffron),var(--saffron2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:8px;}
@@ -116,7 +118,7 @@ input,select,textarea,button{font-family:'Outfit',sans-serif;}
 .user-name{color:rgba(255,255,255,.7);font-size:12px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .sign-out-btn{background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:16px;transition:color .15s;}
 .sign-out-btn:hover{color:rgba(255,255,255,.8);}
-.admin-main{margin-left:220px;flex:1;height:100vh;overflow-y:auto;overflow-x:hidden;background:var(--paper);-webkit-overflow-scrolling:touch;}
+.admin-main{margin-left:220px;flex:1;min-height:100vh;background:var(--paper);}
 .admin-topbar{background:#fff;border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
 .topbar-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);}
 .topbar-right{display:flex;align-items:center;gap:10px;}
@@ -253,11 +255,37 @@ table.data-table tr:hover td{background:var(--paper);}
       <div class="role-icon">👨‍💼</div>
       <div>
         <div class="role-title">Contractor Login</div>
-        <div class="role-sub">Sign in with Google to continue</div>
+        <div class="role-sub">Admin Dashboard — Full Access</div>
       </div>
       <div class="role-arrow">›</div>
     </button>
-    <div style="color:rgba(255,255,255,.18);font-size:11px;margin-top:18px;">MDM Billing Portal · A&amp;N Islands</div>
+    <button class="role-btn school" onclick="goSchool()">
+      <div class="role-icon">🏫</div>
+      <div>
+        <div class="role-title">School Entry</div>
+        <div class="role-sub">Submit daily attendance with PIN</div>
+      </div>
+      <div class="role-arrow" style="color:rgba(255,255,255,.25)">›</div>
+    </button>
+    <div style="color:rgba(255,255,255,.2);font-size:11px;margin-top:14px;">MDM Billing Portal · A&N Islands</div>
+  </div>
+</div>
+
+<!-- ══ VIEW: FIREBASE SETUP ══ -->
+<div id="v-setup" class="view">
+  <div class="setup-card fade-up">
+    <div style="font-size:36px;margin-bottom:12px;">🔥</div>
+    <h2>Connect Firebase</h2>
+    <p>Paste your Firebase project config below. This is stored only on this device.</p>
+    <div id="setup-err"></div>
+    <div class="field"><div class="lbl">API Key *</div><input id="fb-apikey" type="text" placeholder="AIzaSy…"/></div>
+    <div class="field"><div class="lbl">Auth Domain *</div><input id="fb-auth" type="text" placeholder="project.firebaseapp.com"/></div>
+    <div class="field"><div class="lbl">Project ID *</div><input id="fb-proj" type="text" placeholder="my-mdm-app"/></div>
+    <div class="field"><div class="lbl">App ID</div><input id="fb-appid" type="text" placeholder="1:123:web:abc"/></div>
+    <div style="margin-top:4px;">
+      <div class="alert alert-info" style="margin-bottom:12px;">Enable <b>Firestore Database</b> and <b>Google Authentication</b> in Firebase Console before connecting.</div>
+      <button class="btn btn-ink btn-full" onclick="doSetup()">🚀 Connect &amp; Continue</button>
+    </div>
   </div>
 </div>
 
@@ -286,8 +314,8 @@ table.data-table tr:hover td{background:var(--paper);}
     <div class="upi-box">
       <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;">Pay via UPI</div>
       <div class="upi-id" id="upi-display">yourname@upi</div>
-      <div class="upi-amount" id="pending-fee">₹2,499 · One session (2025-26)</div>
-      <div class="qr-placeholder" id="qr-display">QR Code<br/>Coming soon</div>
+      <div class="upi-amount">₹2,499 · One session (2025-26)</div>
+      <div class="qr-placeholder">QR Code<br/>Coming soon</div>
     </div>
     <div class="alert alert-info" style="text-align:left;">After payment, WhatsApp your screenshot to <b id="wa-num-display">9474239266</b>. Activation within a few hours.</div>
     <a id="wa-link" href="#" class="wa-btn" target="_blank">
@@ -333,7 +361,8 @@ table.data-table tr:hover td{background:var(--paper);}
         <div class="card-title">📦 Services Allotted to You</div>
         <div class="alert alert-info" style="margin-bottom:12px;">Enable only the services mentioned in your sanction order.</div>
         <div id="services-toggles">
-          <div class="toggle-row"><div><div class="toggle-name">🍽️ Central Share</div><div class="toggle-desc">Cooked meal bill (all sections)</div></div><button class="toggle on" data-key="central" onclick="toggleSvc(this)"></button></div>
+          <div class="toggle-row"><div><div class="toggle-name">🍽️ Central Share (Pre-Primary + Primary)</div><div class="toggle-desc">Cooked meal bill for Nursery to Class V</div></div><button class="toggle on" data-key="centralPP" onclick="toggleSvc(this)"></button></div>
+          <div class="toggle-row"><div><div class="toggle-name">🍽️ Central Share (Upper Primary)</div><div class="toggle-desc">Cooked meal bill for Class VI–VIII</div></div><button class="toggle on" data-key="centralUP" onclick="toggleSvc(this)"></button></div>
           <div class="toggle-row"><div><div class="toggle-name">🏛️ UT Share</div><div class="toggle-desc">UT government contribution per student per day</div></div><button class="toggle on" data-key="utShare" onclick="toggleSvc(this)"></button></div>
           <div class="toggle-row"><div><div class="toggle-name">🥚 Boiled Egg</div><div class="toggle-desc">Supplied on designated egg days</div></div><button class="toggle" data-key="egg" onclick="toggleSvc(this)"></button></div>
           <div class="toggle-row"><div><div class="toggle-name">🍌 Ripened Banana</div><div class="toggle-desc">Supplied on designated banana days</div></div><button class="toggle" data-key="banana" onclick="toggleSvc(this)"></button></div>
@@ -344,9 +373,8 @@ table.data-table tr:hover td{background:var(--paper);}
       <div class="card" style="margin-bottom:14px;">
         <div class="card-title">💰 Rates (₹ per student per working day)</div>
         <div class="grid2">
-          <div class="field"><div class="lbl">Pre-Primary Rate (₹)</div><input id="r-pp" type="number" value="6.78" step="0.01"/></div>
-          <div class="field"><div class="lbl">Primary Rate (₹)</div><input id="r-p" type="number" value="6.78" step="0.01"/></div>
-          <div class="field"><div class="lbl">Upper Primary Rate (₹)</div><input id="r-up" type="number" value="10.17" step="0.01"/></div>
+          <div class="field"><div class="lbl">Central — Pre+Primary</div><input id="r-cp" type="number" value="6.78" step="0.01"/></div>
+          <div class="field"><div class="lbl">Central — Upper Primary</div><input id="r-cu" type="number" value="10.17" step="0.01"/></div>
           <div class="field"><div class="lbl">UT Share</div><input id="r-ut" type="number" value="6" step="0.01"/></div>
           <div class="field"><div class="lbl">Boiled Egg (per egg)</div><input id="r-egg" type="number" value="11.88" step="0.01"/></div>
           <div class="field"><div class="lbl">Ripened Banana</div><input id="r-ban" type="number" value="6.99" step="0.01"/></div>
@@ -537,9 +565,8 @@ table.data-table tr:hover td{background:var(--paper);}
         <div class="card" style="margin-bottom:14px;">
           <div class="card-title">💰 Rates (₹)</div>
           <div class="grid2">
-            <div class="field"><div class="lbl">Pre-Primary Rate (₹)</div><input id="set-rpp" type="number" step="0.01"/></div>
-            <div class="field"><div class="lbl">Primary Rate (₹)</div><input id="set-rp" type="number" step="0.01"/></div>
-            <div class="field"><div class="lbl">Upper Primary Rate (₹)</div><input id="set-rup" type="number" step="0.01"/></div>
+            <div class="field"><div class="lbl">Central — Pre+Primary</div><input id="set-rcp" type="number" step="0.01"/></div>
+            <div class="field"><div class="lbl">Central — Upper Primary</div><input id="set-rcu" type="number" step="0.01"/></div>
             <div class="field"><div class="lbl">UT Share</div><input id="set-rut" type="number" step="0.01"/></div>
             <div class="field"><div class="lbl">Boiled Egg</div><input id="set-regg" type="number" step="0.01"/></div>
             <div class="field"><div class="lbl">Ripened Banana</div><input id="set-rban" type="number" step="0.01"/></div>
@@ -550,7 +577,8 @@ table.data-table tr:hover td{background:var(--paper);}
         <div class="card" style="margin-bottom:14px;">
           <div class="card-title">📦 Services</div>
           <div id="set-services-toggles">
-            <div class="toggle-row"><div><div class="toggle-name">🍽️ Central Share</div></div><button class="toggle" data-key="central" onclick="toggleSvc(this)"></button></div>
+            <div class="toggle-row"><div><div class="toggle-name">🍽️ Central Share (Pre-Primary + Primary)</div></div><button class="toggle" data-key="centralPP" onclick="toggleSvc(this)"></button></div>
+            <div class="toggle-row"><div><div class="toggle-name">🍽️ Central Share (Upper Primary)</div></div><button class="toggle" data-key="centralUP" onclick="toggleSvc(this)"></button></div>
             <div class="toggle-row"><div><div class="toggle-name">🏛️ UT Share</div></div><button class="toggle" data-key="utShare" onclick="toggleSvc(this)"></button></div>
             <div class="toggle-row"><div><div class="toggle-name">🥚 Boiled Egg</div></div><button class="toggle" data-key="egg" onclick="toggleSvc(this)"></button></div>
             <div class="toggle-row"><div><div class="toggle-name">🍌 Ripened Banana</div></div><button class="toggle" data-key="banana" onclick="toggleSvc(this)"></button></div>
@@ -604,16 +632,6 @@ table.data-table tr:hover td{background:var(--paper);}
 
 <script>
 /* ═══════════════════════════════
-   FIREBASE CONFIG
-═══════════════════════════════ */
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyAvI7f2ilz4eGpY8_U7rzk56vTXgmbxxOM",
-  authDomain: "mdm-billing-26.firebaseapp.com",
-  projectId: "mdm-billing-26",
-  appId: "1:1077975540746:web:cc35a43e52ceb601eb6bf3"
-};
-
-/* ═══════════════════════════════
    STATE
 ═══════════════════════════════ */
 let db=null, auth=null;
@@ -632,10 +650,21 @@ window.addEventListener('DOMContentLoaded',()=>{
   const sp=new URLSearchParams(location.search);
   if(sp.get('school')){
     // redirect to school.html
-    location.href='/school'+location.search;
+    location.href='school.html'+location.search;
     return;
   }
-  initFirebase(FIREBASE_CONFIG);
+  const saved=localStorage.getItem('mdm_fb');
+  if(saved){
+    try{
+      initFirebase(JSON.parse(saved));
+    }catch(e){
+      showView('v-setup');
+      hideLoader();
+    }
+  } else {
+    showView('v-setup');
+    hideLoader();
+  }
 });
 
 function initFirebase(cfg){
@@ -645,7 +674,7 @@ function initFirebase(cfg){
     auth=firebase.auth();
     auth.onAuthStateChanged(onAuthChange);
   }catch(e){
-    alert('Firebase init failed: '+e.message);
+    showView('v-setup');
     hideLoader();
   }
 }
@@ -714,6 +743,23 @@ function todayStr(){const d=new Date();return `${d.getFullYear()}-${padZ(d.getMo
 function fmtDate(s){if(!s)return'';const[y,m,d]=s.split('-');return`${d}.${m}.${y}`;}
 
 /* ═══════════════════════════════
+   FIREBASE SETUP
+═══════════════════════════════ */
+function doSetup(){
+  const cfg={
+    apiKey:document.getElementById('fb-apikey').value.trim(),
+    authDomain:document.getElementById('fb-auth').value.trim(),
+    projectId:document.getElementById('fb-proj').value.trim(),
+    appId:document.getElementById('fb-appid').value.trim()
+  };
+  if(!cfg.apiKey||!cfg.authDomain||!cfg.projectId){
+    showErr('setup-err','API Key, Auth Domain and Project ID are required.');return;
+  }
+  localStorage.setItem('mdm_fb',JSON.stringify(cfg));
+  showLoader();
+  initFirebase(cfg);
+}
+
 /* ═══════════════════════════════
    AUTH
 ═══════════════════════════════ */
@@ -735,42 +781,11 @@ async function doSignOut(){
 /* ═══════════════════════════════
    PENDING ACTIVATION
 ═══════════════════════════════ */
-async function showPending(){
-  // Load live admin settings from Firestore
-  try{
-    const snap=await db.doc('admin/settings').get();
-    if(snap.exists){
-      const s=snap.data();
-      const upi=s.upiId||'yourname@upi';
-      const wa=s.whatsapp||'9474239266';
-      const fee=s.sessionFee||2499;
-      const qrUrl=s.qrCodeUrl||'';
-      const session=s.session||'2025-26';
-      
-      document.getElementById('upi-display').textContent=upi;
-      document.getElementById('wa-num-display').textContent=wa;
-      document.getElementById('pending-session').textContent=session;
-      document.getElementById('pending-fee').textContent='₹'+(+fee).toLocaleString('en-IN')+' · One session ('+session+')';
-      
-      const cleanWa=wa.replace(/\D/g,'');
-      const waNum=cleanWa.startsWith('91')?cleanWa:'91'+cleanWa;
-      document.getElementById('wa-link').href='https://wa.me/'+waNum+'?text=Hi%2C+I+have+paid+for+MDM+Billing+Portal+activation.+Please+activate+my+account.';
-      
-      // Show QR code if uploaded, otherwise show placeholder
-      const qrBox=document.getElementById('qr-display');
-      if(qrUrl){
-        qrBox.innerHTML='<img src="'+qrUrl+'" alt="UPI QR Code" style="width:100%;height:100%;object-fit:contain;border-radius:8px;"/>';
-        qrBox.style.border='none';
-        qrBox.style.padding='0';
-      } else {
-        qrBox.innerHTML='QR Code<br/>Coming soon';
-      }
-    }
-  }catch(e){
-    // Fall back to defaults if settings can't load
-    document.getElementById('upi-display').textContent='yourname@upi';
-    document.getElementById('wa-num-display').textContent='9474239266';
-  }
+function showPending(){
+  // These would be your actual UPI details
+  document.getElementById('upi-display').textContent='9474239266@upi';
+  document.getElementById('wa-num-display').textContent='9474239266';
+  document.getElementById('wa-link').href='https://wa.me/919474239266?text=Hi%2C+I+have+paid+for+MDM+Billing+Portal+activation.+Please+activate+my+account.';
   showView('v-pending');
 }
 
@@ -838,9 +853,8 @@ async function obFinish(){
       contractStart:document.getElementById('ob-cstart').value.trim(),
       contractEnd:document.getElementById('ob-cend').value.trim(),
       rates:{
-        ppRate:+document.getElementById('r-pp').value,
-        pRate:+document.getElementById('r-p').value,
-        upRate:+document.getElementById('r-up').value,
+        centralPP:+document.getElementById('r-cp').value,
+        centralUP:+document.getElementById('r-cu').value,
         utShare:+document.getElementById('r-ut').value,
         egg:+document.getElementById('r-egg').value,
         banana:+document.getElementById('r-ban').value,
@@ -963,7 +977,7 @@ function renderSchools(){
     wrap.innerHTML=`<div class="card"><div style="text-align:center;padding:32px;color:var(--ink3);">No schools yet. Add your first school above.</div></div>`;
     return;
   }
-  const baseUrl=location.origin+'/school';
+  const baseUrl=location.origin+location.pathname.replace('index.html','')+'school.html';
   wrap.innerHTML=`<div class="card" style="padding:0;overflow:hidden;">
     <div style="padding:14px 18px;border-bottom:1px solid var(--paper2);font-weight:700;font-size:14px;">${schools.length} School${schools.length>1?'s':''}</div>
     <div class="tbl-wrap">
@@ -975,9 +989,9 @@ function renderSchools(){
             <td><b>${s.name}</b></td>
             <td><span class="chip chip-gray">${s.section||'—'}</span></td>
             <td><div class="pin-pill">${s.pin}</div></td>
-            <td><span style="font-size:11px;color:var(--teal);font-family:monospace">${baseUrl}?c=${currentUser.uid}&s=${s.id}</span></td>
+            <td><span style="font-size:11px;color:var(--teal);font-family:monospace">${baseUrl}?school=${s.id}</span></td>
             <td style="white-space:nowrap;display:flex;gap:6px;align-items:center;">
-              <button class="btn btn-outline btn-sm" onclick="copyLink('${baseUrl}?c=${currentUser.uid}&s=${s.id}')">📋 Copy</button>
+              <button class="btn btn-outline btn-sm" onclick="copyLink('${baseUrl}?school=${s.id}')">📋 Copy</button>
               <button class="btn btn-outline btn-sm" onclick='editSchool(${JSON.stringify(s)})'>✏️</button>
               <button class="btn btn-outline btn-sm" style="color:var(--red);border-color:var(--red);" onclick="deleteSchool('${s.id}','${s.name}')">🗑️</button>
             </td>
@@ -1109,7 +1123,8 @@ function loadAttendance(){renderAttendance();}
 
 /* ── BILLS ── */
 const BILL_TYPES=[
-  {key:'central',label:'Central Share',icon:'📚',svc:'central'},
+  {key:'centralPP',label:'Central Share — Pre+Primary',icon:'📚',svc:'centralPP'},
+  {key:'centralUP',label:'Central Share — Upper Primary',icon:'📖',svc:'centralUP'},
   {key:'utShare',label:'UT Share',icon:'🏛️',svc:'utShare'},
   {key:'egg',label:'Boiled Egg',icon:'🥚',svc:'egg'},
   {key:'banana',label:'Ripened Banana',icon:'🍌',svc:'banana'},
@@ -1167,9 +1182,8 @@ function populateSettings(){
   document.getElementById('set-order').value=contractorDoc.orderNo||'';
   document.getElementById('set-odate').value=contractorDoc.orderDate||'';
   const r=contractorDoc.rates||{};
-  document.getElementById('set-rpp').value=r.ppRate||r.centralPP||6.78;
-  document.getElementById('set-rp').value=r.pRate||r.centralPP||6.78;
-  document.getElementById('set-rup').value=r.upRate||r.centralUP||10.17;
+  document.getElementById('set-rcp').value=r.centralPP||6.78;
+  document.getElementById('set-rcu').value=r.centralUP||10.17;
   document.getElementById('set-rut').value=r.utShare||6;
   document.getElementById('set-regg').value=r.egg||11.88;
   document.getElementById('set-rban').value=r.banana||6.99;
@@ -1199,9 +1213,8 @@ async function saveFirmDetails(){
 
 async function saveRates(){
   const rates={
-    ppRate:+document.getElementById('set-rpp').value,
-    pRate:+document.getElementById('set-rp').value,
-    upRate:+document.getElementById('set-rup').value,
+    centralPP:+document.getElementById('set-rcp').value,
+    centralUP:+document.getElementById('set-rcu').value,
     utShare:+document.getElementById('set-rut').value,
     egg:+document.getElementById('set-regg').value,
     banana:+document.getElementById('set-rban').value,
@@ -1247,7 +1260,7 @@ function genPin(targetId){
   document.getElementById(targetId).value=p;
 }
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
-function goSchool(){window.open('/school','_blank');}
+function goSchool(){window.open('school.html','_blank');}
 
 /* ═══════════════════════════════
    BILL PRINT ENGINE
@@ -1324,13 +1337,10 @@ function buildAndPrintBill(type, school, attData, contractor, monthLabel){
   const hasP=section.includes('P');
   const hasUP=section.includes('UP');
 
-  if(type==='central'||type==='utShare'){
+  if(type==='centralPP'||type==='centralUP'||type==='utShare'){
     const isUT=type==='utShare';
-    const ratePP=r.ppRate||r.centralPP||6.78;
-    const rateP=r.pRate||r.centralPP||6.78;
-    const rateUP=r.upRate||r.centralUP||10.17;
-    const rateUT=r.utShare||6;
-    const rateLabel=isUT?rateUT:(ratePP===rateP?`${ratePP}/${rateUP}`:`${ratePP}/${rateP}/${rateUP}`);
+    const rateCP=r.centralPP||6.78, rateCU=r.centralUP||10.17, rateUT=r.utShare||6;
+    const rateLabel=isUT?rateUT:`${rateCP}/${rateCU}`;
     const colLabel=isUT?'UT Share':'Central Share';
     const billTitle=isUT?'BILL FOR UT SHARE':'BILL FOR CENTRAL SHARE';
     let totalPP=0,totalP=0,totalUP=0,grandAmt=0;
@@ -1339,7 +1349,7 @@ function buildAndPrintBill(type, school, attData, contractor, monthLabel){
       totalPP+=pp; totalP+=p; totalUP+=up;
       let amt=0;
       if(isUT) amt=(pp+p+up)*rateUT;
-      else amt=pp*ratePP+p*rateP+up*rateUP;
+      else amt=(pp+p)*rateCP+up*rateCU;
       grandAmt+=amt;
       return `<tr>
         <td>${i+1}</td><td class="l">${fmtDate(a.date)}</td>
