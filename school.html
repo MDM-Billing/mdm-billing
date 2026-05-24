@@ -257,20 +257,22 @@ const MONTHS_F=['January','February','March','April','May','June','July','August
 ═══════════════════════════ */
 window.addEventListener('DOMContentLoaded',async()=>{
   const sp=new URLSearchParams(location.search);
-  schoolId=sp.get('school');
+  // New URL format: ?c=CONTRACTORID&s=SCHOOLID
+  // Old format (fallback): ?school=SCHOOLID
+  contractorId=sp.get('c');
+  schoolId=sp.get('s')||sp.get('school');
   if(!schoolId){
     document.body.innerHTML='<div style="padding:40px;text-align:center;font-size:16px;color:#6b7394;">No school ID in URL. Please use the link provided by your contractor.</div>';
     return;
   }
-  // Load Firebase config
-  const saved=localStorage.getItem('mdm_fb');
-  if(!saved){
-    // Try to derive from parent
-    document.body.innerHTML='<div style="padding:40px;text-align:center;"><p style="color:#6b7394;font-size:14px;">Please open the main MDM portal first to configure Firebase, then use the school link.</p></div>';
-    return;
-  }
+  // Firebase config — hardcoded so schools can open directly
+  const cfg={
+    apiKey:"AIzaSyAvI7f2ilz4eGpY8_U7rzk56vTXgmbxxOM",
+    authDomain:"mdm-billing-26.firebaseapp.com",
+    projectId:"mdm-billing-26",
+    appId:"1:1077975540746:web:cc35a43e52ceb601eb6bf3"
+  };
   try{
-    const cfg=JSON.parse(saved);
     if(!firebase.apps.length) firebase.initializeApp(cfg);
     db=firebase.firestore();
     await findSchool();
@@ -281,28 +283,30 @@ window.addEventListener('DOMContentLoaded',async()=>{
 });
 
 async function findSchool(){
-  // Search all contractors for this schoolId
-  // We need contractorId — encode it in the school URL as ?school=CONTRACTORID_SCHOOLID
-  // or store contractorId in school doc
-  // schoolId format: we store it with contractorId lookup
-  // Try fetching from a schools collection group
   try{
-    const snap=await db.collectionGroup('schools').where(firebase.firestore.FieldPath.documentId(),'==',schoolId).get();
-    if(snap.empty){
-      // Try path-based (schoolId = docId, contractorId stored inside)
-      throw new Error('Not found via group');
+    // If contractorId is in URL, use direct path lookup (no index needed)
+    if(contractorId){
+      const sSnap=await db.doc('contractors/'+contractorId+'/schools/'+schoolId).get();
+      if(!sSnap.exists) throw new Error('School not found at direct path');
+      schoolDoc={id:sSnap.id,...sSnap.data()};
+      const cSnap=await db.doc('contractors/'+contractorId).get();
+      contractorDoc=cSnap.exists?cSnap.data():{};
+      initPinScreen();
+      return;
     }
-    const doc=snap.docs[0];
-    schoolDoc={id:doc.id,...doc.data()};
-    // Get contractorId from path: contractors/{cid}/schools/{sid}
-    contractorId=doc.ref.parent.parent.id;
-    // Load contractor
+    // Fallback: collection group query (needs Firestore index)
+    const snap=await db.collectionGroup('schools').get();
+    let found=null;
+    snap.docs.forEach(doc=>{
+      if(doc.id===schoolId) found=doc;
+    });
+    if(!found) throw new Error('School not found');
+    schoolDoc={id:found.id,...found.data()};
+    contractorId=found.ref.parent.parent.id;
     const cSnap=await db.doc('contractors/'+contractorId).get();
     contractorDoc=cSnap.exists?cSnap.data():{};
     initPinScreen();
   }catch(e){
-    // Try direct lookup using school ID stored in Firestore as encoded
-    // Fallback: prompt for contractorId (shouldn't happen in production)
     document.getElementById('pin-school-name').textContent='School Not Found';
     document.getElementById('pin-school-sub').textContent='This link appears to be invalid. Please contact your contractor.';
     showView('v-pin');
