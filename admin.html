@@ -24,7 +24,7 @@
   --r:14px;--rs:9px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;margin:0;padding:0;overflow:hidden;}body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);}
+body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
@@ -37,7 +37,7 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;}body{font-family:'Outf
 .loader-txt{color:rgba(255,255,255,.4);font-size:13px;}
 
 /* ── LOGIN ── */
-#v-login{height:100vh;overflow:hidden;background:linear-gradient(160deg,#0f1420 0%,#1a2035 60%,#0d2020 100%);display:flex;align-items:center;justify-content:center;padding:20px;position:relative;}
+#v-login{min-height:100vh;background:linear-gradient(160deg,#0f1420 0%,#1a2035 60%,#0d2020 100%);display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden;}
 #v-login::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,rgba(184,134,11,.06),transparent 60%),radial-gradient(circle at 75% 25%,rgba(13,110,110,.06),transparent 50%);}
 .login-card{background:rgba(255,255,255,.04);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:44px 36px;width:100%;max-width:380px;text-align:center;position:relative;z-index:1;}
 .login-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(184,134,11,.15);border:1px solid rgba(184,134,11,.3);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--gold2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:20px;}
@@ -50,10 +50,10 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;}body{font-family:'Outf
 .login-note{color:rgba(255,255,255,.2);font-size:11px;margin-top:16px;}
 
 /* ── SHELL ── */
-#v-admin{display:flex;height:100vh;overflow:hidden;}
+#v-admin{display:flex;min-height:100vh;}
 
 /* SIDEBAR */
-.sidebar{width:230px;flex-shrink:0;background:var(--ink);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:50;height:100vh;}
+.sidebar{width:230px;flex-shrink:0;background:var(--ink);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:50;}
 .sb-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.05);}
 .sb-logo-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(184,134,11,.15);border:1px solid rgba(184,134,11,.25);border-radius:8px;padding:4px 10px;font-size:10px;font-weight:700;color:var(--gold2);letter-spacing:.5px;margin-bottom:10px;}
 .sb-logo-name{font-family:'Playfair Display',serif;color:#fff;font-size:16px;font-weight:700;line-height:1.2;}
@@ -73,7 +73,7 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;}body{font-family:'Outf
 .sb-signout:hover{color:rgba(255,255,255,.7);}
 
 /* MAIN */
-.main{margin-left:230px;flex:1;height:100vh;overflow-y:auto;background:var(--paper);}
+.main{margin-left:230px;flex:1;min-height:100vh;}
 .topbar{background:#fff;border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
 .topbar-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);}
 .topbar-right{display:flex;align-items:center;gap:10px;}
@@ -469,21 +469,6 @@ tr:hover td{background:#fafaf8;}
               <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;">Session Fee (₹)</div>
               <input id="set-fee" type="number" value="2499" style="width:100%;padding:10px 13px;border-radius:9px;border:1.5px solid var(--border);font-size:14px;font-family:'Outfit',sans-serif;"/>
             </div>
-            <div style="margin-bottom:13px;">
-              <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;">Current Session</div>
-              <input id="set-session" type="text" placeholder="2025-26" style="width:100%;padding:10px 13px;border-radius:9px;border:1.5px solid var(--border);font-size:14px;font-family:'Outfit',sans-serif;"/>
-            </div>
-            <div style="margin-bottom:13px;">
-              <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;">UPI Payment QR Code</div>
-              <div style="display:flex;gap:10px;align-items:flex-start;">
-                <div id="qr-preview" style="width:90px;height:90px;border:2px dashed var(--border);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-size:10px;text-align:center;flex-shrink:0;overflow:hidden;background:#fafaf8;">No QR</div>
-                <div style="flex:1;">
-                  <input id="set-qr-file" type="file" accept="image/*" style="font-size:12px;font-family:'Outfit',sans-serif;width:100%;" onchange="previewQR(this)"/>
-                  <div style="font-size:10px;color:var(--ink3);margin-top:5px;line-height:1.4;">Upload your UPI QR code image (PNG/JPG, max 200KB). Contractors will see this on payment screen.</div>
-                  <button type="button" onclick="clearQR()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:11px;font-family:'Outfit',sans-serif;margin-top:5px;padding:0;text-decoration:underline;display:none;" id="qr-clear-btn">Remove QR</button>
-                </div>
-              </div>
-            </div>
             <div style="margin-bottom:16px;">
               <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;">Admin Email (your Gmail)</div>
               <input id="set-admin-email" type="email" placeholder="you@gmail.com" style="width:100%;padding:10px 13px;border-radius:9px;border:1.5px solid var(--border);font-size:14px;font-family:'Outfit',sans-serif;"/>
@@ -517,7 +502,7 @@ tr:hover td{background:#fafaf8;}
    (same as the one from your index.html)
 ═══════════════════════════════ */
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyAvI7f2ilz4eGpY8_U7rzk56vTXgmbxxOM",
+  apiKey: "AIzaSyAvI7f2iIz4eGpY8_U7rzk56vTXgmbxxOM",
   authDomain: "mdm-billing-26.firebaseapp.com",
   projectId: "mdm-billing-26",
   appId: "1:1077975540746:web:cc35a43e52ceb601eb6bf3"
@@ -889,48 +874,9 @@ async function loadSettings(){
       document.getElementById('set-upi').value=d.upiId||'';
       document.getElementById('set-wa').value=d.whatsapp||'';
       document.getElementById('set-fee').value=d.sessionFee||2499;
-      document.getElementById('set-session').value=d.session||'2025-26';
       document.getElementById('set-admin-email').value=d.adminEmail||'';
-      // Load QR if exists
-      if(d.qrCodeUrl){
-        const prev=document.getElementById('qr-preview');
-        prev.innerHTML='<img src="'+d.qrCodeUrl+'" alt="QR" style="width:100%;height:100%;object-fit:contain;"/>';
-        prev.style.borderStyle='solid';
-        document.getElementById('qr-clear-btn').style.display='inline-block';
-        currentQrData=d.qrCodeUrl;
-      }
     }
   }catch(e){}
-}
-
-let currentQrData=null;
-
-function previewQR(input){
-  const file=input.files[0];
-  if(!file) return;
-  if(file.size>200*1024){
-    alert('QR image too large. Please use an image under 200KB.');
-    input.value='';
-    return;
-  }
-  const reader=new FileReader();
-  reader.onload=(e)=>{
-    currentQrData=e.target.result;
-    const prev=document.getElementById('qr-preview');
-    prev.innerHTML='<img src="'+currentQrData+'" alt="QR" style="width:100%;height:100%;object-fit:contain;"/>';
-    prev.style.borderStyle='solid';
-    document.getElementById('qr-clear-btn').style.display='inline-block';
-  };
-  reader.readAsDataURL(file);
-}
-
-function clearQR(){
-  if(!confirm('Remove QR code?'))return;
-  currentQrData=null;
-  document.getElementById('qr-preview').innerHTML='No QR';
-  document.getElementById('qr-preview').style.borderStyle='dashed';
-  document.getElementById('set-qr-file').value='';
-  document.getElementById('qr-clear-btn').style.display='none';
 }
 
 async function saveSettings(){
@@ -938,13 +884,11 @@ async function saveSettings(){
     upiId:document.getElementById('set-upi').value.trim(),
     whatsapp:document.getElementById('set-wa').value.trim(),
     sessionFee:+document.getElementById('set-fee').value,
-    session:document.getElementById('set-session').value.trim()||'2025-26',
-    adminEmail:document.getElementById('set-admin-email').value.trim().toLowerCase(),
-    qrCodeUrl:currentQrData||''
+    adminEmail:document.getElementById('set-admin-email').value.trim().toLowerCase()
   };
   try{
     await db.doc('admin/settings').set(data,{merge:true});
-    showAlert('settings-alert','ok','✅ Settings saved! All contractors will see updated info on their next visit.');
+    showAlert('settings-alert','ok','✅ Settings saved!');
   }catch(e){showAlert('settings-alert','err','Error: '+e.message);}
 }
 
